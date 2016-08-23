@@ -1,0 +1,78 @@
+\documentclass{beamer}
+\usepackage[style=numeric-comp, backend=bibtex]{biblatex}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+
+\bibliography{lit_review}
+%\addbibresource{lit_review.bib}
+
+%opening
+\title{Accelerating Chemical Kinetic Evaluation: A Literature Review}
+\author{Nick Curtis}
+\institute{University of Connecticut}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Chemical Kinetic Simulations are \textbf{Critical}}
+In order to meet increasingly stringent emissions and efficiency requirements, designers of combustion devices have turned to \textbf{new technologies} and \textbf{new fuels}
+\begin{itemize}
+ \item Novel combustion regimes such as low-temperature combustion are often controlled by chemical processes, rather than directly controllable physical processes as in current technology
+ \item Further, developed solutions must be flexible to accommodate a variety of next generation fuels
+\end{itemize}
+Computationally guided combustion design has played an important role in development of these new technologies, however use of realistic chemical modeling (as required for predictive reacting-flow simulations) is prohibitively expensive for most practical systems. 
+\end{frame}
+
+\begin{frame}
+ \frametitle{Chemical Kinetic Integration is \textbf{Expensive}}
+ The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions
+ \begin{itemize}
+  \item e.g., for gasoline \footfullcite{Mehl:2011cn} and jet fuel\footfullcite{Naik2011434}
+ \end{itemize}
+ Commonly used implicit integration integration techniques scales poorly with increasing model size.
+ \begin{itemize}
+  \item These methods require repeated evaluation and factorization of the chemical kinetic Jacobian.
+  \item Naive implementations operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Strategies for cost reduction}
+ A few major strategies exist to accelerate chemical kinetic integration:
+ \begin{itemize}
+  \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
+  \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
+  \item \textbf{Solver vectorization}, reformulation of solvers for efficient single-instruction, multiple-data (SIMD) execution both on specialized hardware---e.g. graphics processing units (GPUs)---and modern central processing units (CPUs)
+  \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Model Reduction Techniques}
+ Model reduction can be divided into a few broad categories:
+ \begin{itemize}
+  \item \textbf{Skeletal reduction} via elimination of unimportant species and reactions
+  \item Simplification of the system and reduction of chemical stiffness via \textbf{time-scale analysis}
+  \item \textbf{Lumping} of similar chemical species and reaction pathways to reduce model size
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Skeletal Model Reduction}
+ Skeletal reduction removes species and reactions considered unimportant for a given thermochemical state-space from a detailed chemical kinetic model.
+ Key features for skeletal model reduction techniques include\fullfootcite{Lu:2009gh}:
+ \begin{itemize}
+  \item \textit{A priori} error control, to avoid expensive model validation after reduction
+  \item \textit{
+ \end{itemize}
+
+ 
+\end{frame}
+
+
+
+
+\end{document}
