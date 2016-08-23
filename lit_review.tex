@@ -1,7 +1,20 @@
 \documentclass{beamer}
 \usepackage[style=numeric-comp, backend=bibtex]{biblatex}
 \usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{mathtools}
 \usepackage[utf8]{inputenc}
+
+\graphicspath{{./Figures/}}
+%smaller footnotes, adapted from http://tex.stackexchange.com/a/146021
+\setbeamerfont{footnote}{size=\fontsize{7pt}{0pt}}
+
+%auto incrementing titles
+\newcounter{drgmethods}
+\newcommand\DRGMethodsTitle{%
+  \frametitle{\refstepcounter{drgmethods}DRG Methods~\thedrgmethods}}
+\resetcounteronoverlays{drgmethods}
+
 
 \bibliography{lit_review}
 %\addbibresource{lit_review.bib}
@@ -35,7 +48,7 @@ Computationally guided combustion design has played an important role in develop
  Commonly used implicit integration integration techniques scales poorly with increasing model size.
  \begin{itemize}
   \item These methods require repeated evaluation and factorization of the chemical kinetic Jacobian.
-  \item Naive implementations operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
+  \item Naive implementations of these operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
  \end{itemize}
 \end{frame}
 
@@ -63,14 +76,54 @@ Computationally guided combustion design has played an important role in develop
 \begin{frame}
  \frametitle{Skeletal Model Reduction}
  Skeletal reduction removes species and reactions considered unimportant for a given thermochemical state-space from a detailed chemical kinetic model.
- Key features for skeletal model reduction techniques include\fullfootcite{Lu:2009gh}:
+ Key features for skeletal model reduction techniques include\footfullcite{Lu:2009gh}:
  \begin{itemize}
-  \item \textit{A priori} error control, to avoid expensive model validation after reduction
-  \item \textit{
+  \item \textbf{\textit{A priori} error control}--to avoid expensive model validation after reduction
+  \item \textbf{Efficient execution}--skeletal reduction techniques are often applied on-the-fly or as the first step in a reduction procedure, and must therefore be efficient for large models with many sampled thermochemical states
  \end{itemize}
-
- 
 \end{frame}
+\begin{frame}
+ \frametitle{Skeletal Reduction Techniques}
+ Many different types of skeletal reduction techniques have been developed, including:
+ \begin{itemize}
+  \item Sensitivity analysis\footfullcite{rabitz:1983}, principal component analysis\footfullcite{vajda:1985}, level of importance analysis\footfullcite{lovas:2009} and computational singular perturbation (CSP) methods modified for skeletal reduction\footfullcite{valorani:2006}
+  \item Directed relation graphs (DRG)\footfullcite{Lu:2006bb}, and related methods including DRG with error propagation (DRGEP)\footfullcite{Pepiot-Desjardins:2008} and DRG\slash DRGEP assisted sensitivity analysis\footfullcite{lu:2008}$^{,}$\footfullcite{niemeyer:2010}.
+ \end{itemize}
+\end{frame}
+\begin{frame}
+ \DRGMethodsTitle
+ Of these, DRG and related techniques are often used as initial reduction methods in a comprehensive reduction process, or dynamic adaptive chemistry methods\footfullcite{liang:2009} due to their efficiency and reliability.
+ \begin{itemize}
+  \item Each species is considered a vertex on a graph
+  \item Edges are determined by the strength of species interactions
+ \end{itemize}
+ \centering
+  \begin{figure}
+    \includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{DRGfig}
+    \caption{A simple DRG example}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+ \DRGMethodsTitle
+ In DRG, the species interactions coefficient is determined as:
+ \begin{equation}
+  r_{AB} \coloneqq \frac{\sum_{i=1\ldots N_R}\lvert \nu_{A,i} \dot{\omega}_i \delta_{B,i}\rvert}{\sum_{i=1\ldots N_R} \lvert\nu_{A,i} \dot{\omega}_i \rvert}
+ \end{equation}
+ where:
+ \begin{itemize}
+  \item $\nu_{A,i}$ is the net stoichiometric coefficient of species $A$ in reaction $i$
+  \item $\dot{\omega}_i$ is the net reaction rate of reaction $i$
+  \item $\delta_{B,i}$ is a Kronecker delta that is unity if species $B$ is present in reaction $i$
+ \end{itemize}
+ An edge is present on the DRG, if and only if $r_{AB} > \epsilon_{cut}$, where $\epsilon_{cut}$ is a user-specified cutoff threshold.
+\end{frame}
+
+\begin{frame}
+ \DRGMethodsTitle
+ Alternate formulations of the species interaction coefficient exist, e.g. to properly handle large isomer groups\footfullcite{luo:2010} or for DRGEP\footfullcite{Pepiot-Desjardins:2008}.
+\end{frame}
+
 
 
 
