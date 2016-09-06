@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usepackage[style=numeric-comp, backend=bibtex]{biblatex}
+\usepackage[style=numeric-comp, backend=biber]{biblatex}
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
@@ -9,18 +9,19 @@
 %smaller footnotes, adapted from http://tex.stackexchange.com/a/146021
 \setbeamerfont{footnote}{size=\fontsize{7pt}{0pt}}
 
-%auto incrementing titles
-\newcounter{drgmethods}
-\newcommand\DRGMethodsTitle{%
-  \frametitle{\refstepcounter{drgmethods}DRG Methods~\thedrgmethods}}
-\resetcounteronoverlays{drgmethods}
+%footnote spacing avoids navigation / margins, adapted from http://tex.stackexchange.com/a/44231
+\addtobeamertemplate{footnote}{\vspace{-6pt}\advance\hsize-0.5cm}{\vspace{6pt}}
+\makeatletter
+% Alternative A: footnote rule
+\renewcommand*{\footnoterule}{\kern -3pt \hrule \@width 2in \kern 8.6pt}
+% Alternative B: no footnote rule
+% \renewcommand*{\footnoterule}{\kern 6pt}
+\makeatother
 
-
-\bibliography{lit_review}
-%\addbibresource{lit_review.bib}
+\bibliography{lit_review.bib}
 
 %opening
-\title{Accelerating Chemical Kinetic Evaluation: A Literature Review}
+\title{SIMT\slash SIMD computation on CPUs and Co-processors: A Literature Review}
 \author{Nick Curtis}
 \institute{University of Connecticut}
 \date{\today}
@@ -56,16 +57,50 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Strategies for cost reduction}
  A few major strategies exist to accelerate chemical kinetic integration:
  \begin{itemize}
-  \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
-  \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
+  \item Model reduction, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
+  \item Improved integration techniques, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
   \item \textbf{Solver vectorization}, reformulation of solvers for efficient single-instruction, multiple-data (SIMD) execution both on specialized hardware---e.g. graphics processing units (GPUs)---and modern central processing units (CPUs)
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
  \end{itemize}
- We will focus on integration techniques, vectorization and high performance computing.
+ We will focus on vectorization and high performance computing.
 \end{frame}
 
-
-
+\begin{frame}
+ \frametitle{Single Instruction, Multiple Data Processing}
+ \begin{columns}
+ 
+ \begin{column}{0.6\textwidth}
+  \textbf{Single Instruction, Multiple Data (SIMD)} processing is a \textit{vector processing} paradigm that allows processing elements to execute the same instruction concurrently on different data.
+  \begin{itemize}
+    \item SIMD-enabled processors include Graphics Processing Units (GPUs), Co-processors (e.g. Intel's Xeon Phi), and modern central processing units (CPUs).
+    \onslide<2->
+    {
+    \item When used in the context of multiple CPU threads, this is referred to as \textbf{Single Instruction, Multiple Thread (SIMT)} processing.
+    }
+  \end{itemize}
+ \end{column}
+ \begin{column}{0.4\textwidth}
+  \only<1>
+  {
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{SIMD.pdf}
+    \caption{SIMD processing.  Adapted from\footnotemark}
+  \end{figure}
+  }
+  \only<2>
+  {
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{SIMT.pdf}
+    \caption{SIMT processing. Adapted from\footnotemark}
+  \end{figure}
+  }
+ \end{column}
+ \footnotetext{\fullcite{Simdfig:2016}}
+ 
+ \end{columns}
+\end{frame}
 
 
 \end{document}
