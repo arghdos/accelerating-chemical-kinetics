@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usepackage[style=numeric-comp, backend=biber]{biblatex}
+\usepackage[style=numeric-comp, backend=biber, firstinits=true]{biblatex}
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
@@ -42,13 +42,13 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \frametitle{Chemical Kinetic Integration is \textbf{Expensive}}
- The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions
+ The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions.
  \begin{itemize}
   \item e.g., for gasoline \footfullcite{Mehl:2011cn} and jet fuel\footfullcite{Naik2011434}
  \end{itemize}
- Commonly used implicit integration integration techniques scales poorly with increasing model size.
+ Further, chemical kinetic models are typically \textbf{stiff}---due to the presence of highly reactive radicals and associated short chemical timescales.
  \begin{itemize}
-  \item These methods require repeated evaluation and factorization of the chemical kinetic Jacobian.
+  \item Typically implicit integration techniques are used to efficiently deal with stiffness, requiring repeated evaluation and factorization of the chemical kinetic Jacobian.
   \item Naive implementations of these operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
  \end{itemize}
 \end{frame}
@@ -64,6 +64,18 @@ Computationally guided combustion design has played an important role in develop
  \end{itemize}
  We will focus on \textbf{vectorization} and \textbf{high performance computing}.
 \end{frame}
+
+\begin{frame}
+ \frametitle{Operator Splitting and Vectorization}
+ Most reactive-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
+ \begin{itemize}
+  \item Stiff integration technique used for chemical kinetics, and an explicit scheme for transport, etc.
+  \item Avoids the high cost of solving the fully coupled PDEs
+  \item Independent system of ODEs at each computational location (e.g. cell) in the domain~$\rightarrow$~vectorization!
+ \end{itemize}
+ It is noted that significant error can be introduced by operator-splitting schemes if the time-steps are not chosen properly~\footfullcite{Gao2015287}.
+\end{frame}
+
 
 \begin{frame}
  \frametitle{Single Instruction, Multiple Data Processing}
@@ -101,8 +113,6 @@ Computationally guided combustion design has played an important role in develop
   \item If some threads need a different instruction (e.g. \textrm{I2}), they must wait and execute their instruction after the other threads
   \item This is known as \textbf{thread divergence}, and is an important performance concern.
  \end{itemize}
-
-  
  \end{column}
  \begin{column}{0.4\textwidth}
   \begin{figure}[r]
@@ -116,15 +126,18 @@ Computationally guided combustion design has played an important role in develop
 
     
 \begin{frame}
- \frametitle{Single Instruction, Multiple Data\slash Thread Processing (2)}
+ \frametitle{CPU-based SIMD Computing for ODE integration}
  Different levels of parallelism are available:
  \begin{itemize}
-  \item Multiple PEs available (e.g. SIMT processing)
-  \begin{itemize}
-   \item Multiple threads may reside on a single CPU core (\textbf{hyperthreading})
-  \end{itemize}
-  \item SIMD processing within a PE
+  \item Multiple PEs (e.g. multiple cores)
+  \item SIMD processing available within each PE
+  \item Additionally, multiple threads may reside on PE (e.g.a \textbf{hyperthreaded} CPU core)
  \end{itemize}
+ Different levels of SIMD cooperation possible:
+ \begin{itemize}
+  \item Each 
+ \end{itemize}
+
 \end{frame}
 
 \end{document}
