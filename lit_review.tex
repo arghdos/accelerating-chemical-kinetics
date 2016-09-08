@@ -1,8 +1,9 @@
 \documentclass{beamer}
-\usepackage[style=numeric-comp, backend=biber, firstinits=true]{biblatex}
+\usepackage[style=numeric-comp, backend=biber, giveninits=true]{biblatex}
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{siunitx}
 \usepackage[utf8]{inputenc}
 
 \graphicspath{{./Figures/}}
@@ -18,6 +19,18 @@
 % \renewcommand*{\footnoterule}{\kern 6pt}
 \makeatother
 
+%make frame for each section
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
 \bibliography{lit_review.bib}
 
 %opening
@@ -29,6 +42,8 @@
 \begin{document}
 
 \maketitle
+
+\section{Introduction}
 
 \begin{frame}
 \frametitle{Chemical Kinetic Simulations are \textbf{Critical}}
@@ -76,6 +91,7 @@ Computationally guided combustion design has played an important role in develop
  It is noted that significant error can be introduced by operator-splitting schemes if the time-steps are not chosen properly~\footfullcite{Gao2015287}.
 \end{frame}
 
+\section{Single Instruction, Multiple Data\slash Thread Processing Paradigms}
 
 \begin{frame}
  \frametitle{Single Instruction, Multiple Data Processing}
@@ -85,10 +101,11 @@ Computationally guided combustion design has played an important role in develop
   \textbf{Single Instruction, Multiple Data (SIMD)} processing is a vector processing paradigm that allows processing elements (PE)---e.g a CPU core---to execute the same instruction concurrently on different data.
   \begin{itemize}
     \item Each vector unit contains multiple processing units (PUs), which are called a \textbf{lane}
-    \item Typically one thread resides on each PE, each issuing SIMD vector instructions
-    \begin{itemize}
-     \item It is possible to have multiple threads per PE, but SIMD instructions between threads do not interact
-    \end{itemize}
+    \item Each vector unit operates on a \textbf{superword}, a variable length data array---typically, \numrange{2}{16} double precision floats (doubles)
+    \item Typically a single thread resides on each PE and issues SIMD vector instructions over multiple data
+    %\begin{itemize}
+    % \item It is possible to have multiple threads per PE, but SIMD instructions between threads do not interact
+    %\end{itemize}
   \end{itemize}
  \end{column}
  \begin{column}{0.4\textwidth}
@@ -127,17 +144,48 @@ Computationally guided combustion design has played an important role in develop
     
 \begin{frame}
  \frametitle{CPU-based SIMD Computing for ODE integration}
- Different levels of parallelism are available:
+ GPUs allow easy implementation of SIMT programs, while SIMD programs are typically easier to construct for CPUs~\footfullcite{Stone:2016}.
+ For CPU-based SIMD computing, different levels of parallelism are available:
  \begin{itemize}
   \item Multiple PEs (e.g. multiple cores)
   \item SIMD processing available within each PE
-  \item Additionally, multiple threads may reside on PE (e.g.a \textbf{hyperthreaded} CPU core)
+  \item Additionally, multiple threads may reside on PE (e.g.a \textit{hyperthreaded} CPU core)
  \end{itemize}
  Different levels of SIMD cooperation possible:
  \begin{itemize}
-  \item Each 
+  \item Each set of ODEs is assigned to separate SIMD lane, meaning a thread solves multiple sets of ODEs $\rightarrow$ \textbf{shallow} vectorization
+  \item Each thread uses SIMD operators to vectorize solution of a single set of ODEs $\rightarrow$ \textbf{deep} vectorization
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{CPU-based SIMD Computing -- Difficulties}
+  Explicit use of SIMD instructions is typically platform--dependent and difficult to implement\footfullcite{Stone:2016}.
+  \begin{itemize}
+   \item Specialized compilers are often used to identify vectorizable loops and generate the appropriate platform--dependent SIMD code.
+  \end{itemize}
+  Recently many tools have emerged to ease the development burden of SIMD programming
+  \begin{itemize}
+   \item \texttt{OpenCL}~\footfullcite{Stone:2010} is a platform--independent language geared towards SIMT\slash SIMD programming.
+   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates explicit SIMT\slash SIMD code for CPUs and GPUs
+  \end{itemize}
+\end{frame}
+
+\section{CPU-based SIMD Integration of Stiff ODEs}
+
+\begin{frame}
+ \frametitle{Chemical Kinetic Integration}
+ Stone and Niemeyer~\footfullcite{Stone:2016} investigated the effect of both wide and deep SIMD\slash SIMT parallelization of two explicit integration techniques (and accompanying chemical kinetic rate evaluation subroutines) on the CPU, GPU and an Intel Xeon Phi co-processor (MIC).
+ \begin{itemize}
+  \item The most efficient word-size was 2--4 doubles on both the CPU and MIC
+  \item Speedups of \SIrange[range-phrase=--, range-units = single]{2}{3}{\times} (over a baseline OpenMP parallelized CPU version) were achieved for chemical kinetic rate evaluation using deep-vectorized CPU\slash MIC codes, and shallow-vectorized GPU codes
+  \item Speedups of up to $1.4\times$, $2.5\times$ and $3.2\times$ (over a baseline CPU OpenMP version) were found for a stiff fourth-order-explicit Rosenbrock solver for the GPU, CPU, and MIC respectively.
+  \item Thread divergence may cause significant performance degradation for the GPU solvers
  \end{itemize}
 
 \end{frame}
+
+
+
 
 \end{document}
