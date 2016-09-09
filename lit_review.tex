@@ -194,8 +194,35 @@ Computationally guided combustion design has played an important role in develop
   \item The CBE had two double precision SIMD lanes, hence the parallel efficiency: $\epsilon = \frac{1.89}{2.0} = 0.94$.
   \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
  \end{itemize}
-
 \end{frame}
+
+\begin{frame}
+ \frametitle{Thread-divergence Mitigation for SIMD\slash SIMT-based ODE Integration}
+ \only<1>
+ {
+ One significant source of thread-divergence for shallow SIMD\slash SIMT ODE solvers is differing time-step sizes between ODE problems
+ \begin{itemize}
+   \item Adaptive time-stepping strategies are commonly used to maintain accuracy while minimizing computational effort (compared to a fixed time-step)
+   \item The number of adaptive time-steps required to complete integration is typically not known a priori, and may be \textit{severely} unbalanced between ODEs processed together in a SIMD\slash SIMT program
+    \item This may result in significant wastage of computational cycles $\rightarrow$ \textbf{thread divergence}
+ \end{itemize}
+ }
+ \only<2>
+ {
+  Murray~\footfullcite{Murray:2012} presented a method of mitigating this issue:
+  \begin{itemize}
+    \item Instead of lane\slash thread (work unit) solving a single set of ODEs, it was suggested to assign multiple sets of ODEs to each work unit
+    \item When integration of a set of ODEs completes, the work unit immediately begins to solve the next set of ODEs
+    \item This packing scheme may result in uncoalesced\slash irregular memory accesses, however:
+    \begin{itemize}
+     \item Analytically it approaches ideal parallel scaling
+     \item Empirically a \SI{10}{\percent} improvement  was found over the non-packed version on a GPU
+     \item The GPU used in this study is quite old and may have been more adversely affected by uncoalesced memory accesses than a modern GPU
+    \end{itemize}
+  \end{itemize}
+ }
+\end{frame}
+
 
 
 
