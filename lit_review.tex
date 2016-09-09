@@ -3,6 +3,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage[version=3]{mhchem} % Formula subscripts using \ce{}, e.g., \ce{H2SO4}
 \usepackage{siunitx}
 \usepackage[utf8]{inputenc}
 
@@ -174,13 +175,24 @@ Computationally guided combustion design has played an important role in develop
 \section{CPU-based SIMD Integration of Stiff ODEs}
 
 \begin{frame}
- \frametitle{Chemical Kinetic Integration}
- Stone and Niemeyer~\footfullcite{Stone:2016} investigated the effect of both wide and deep SIMD\slash SIMT parallelization of two explicit integration techniques (and accompanying chemical kinetic rate evaluation subroutines) on the CPU, GPU and an Intel Xeon Phi co-processor (MIC).
+ \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
+ Stone and Niemeyer~\footfullcite{Stone:2016} investigated the effect of both wide and deep SIMD\slash SIMT parallelization on two fourth-order-explicit integration techniques (and accompanying chemical kinetic rate evaluation subroutines) on the CPU, GPU and an Intel Xeon Phi co-processor (MIC).
  \begin{itemize}
   \item The most efficient word-size was 2--4 doubles on both the CPU and MIC
   \item Speedups of \SIrange[range-phrase=--, range-units = single]{2}{3}{\times} (over a baseline OpenMP parallelized CPU version) were achieved for chemical kinetic rate evaluation using deep-vectorized CPU\slash MIC codes, and shallow-vectorized GPU codes
-  \item Speedups of up to $1.4\times$, $2.5\times$ and $3.2\times$ (over a baseline CPU OpenMP version) were found for a stiff fourth-order-explicit Rosenbrock solver for the GPU, CPU, and MIC respectively.
+  \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for a stiff Rosenbrock solver for the GPU, CPU, and MIC respectively.
   \item Thread divergence may cause significant performance degradation for the GPU solvers
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
+ Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rodenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
+ \begin{itemize}
+  \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
+  \item A speedup of \SI{1.89}{\times} was found over a purely serial solver.
+  \item The CBE had two double precision SIMD lanes, hence the parallel efficiency: $\epsilon = \frac{1.89}{2.0} = 0.94$.
+  \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
  \end{itemize}
 
 \end{frame}
