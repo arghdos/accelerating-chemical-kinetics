@@ -32,6 +32,9 @@
   \end{frame}
 }
 
+\newcounter{dummynote1}% Save footnote counter
+\newcounter{dummynote2}% Save footnote counter
+
 \bibliography{lit_review.bib}
 
 %opening
@@ -223,6 +226,42 @@ Computationally guided combustion design has played an important role in develop
  }
 \end{frame}
 
+\begin{frame}
+ \frametitle{Automatic SIMD-enabled Code Generation for Atmospheric Chemical Kinetics}
+ \setcounter{dummynote1}{\value{footnote}}
+ \setcounter{dummynote2}{\value{footnote}}
+ \addtocounter{dummynote1}{1}
+ \addtocounter{dummynote2}{2}
+ \only<1>
+ {
+  Linford and Sandu\footnotemark[\value{dummynote1}]~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
+ \begin{itemize}
+  \item All loops are completely unrolled (i.e. static code is generated)
+  \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup
+ \end{itemize}
+ }
+ Linford et al.\footnotemark[\value{dummynote2}]~extended this work to GPUs and CBEs.
+ \begin{itemize}
+  \only<1>
+  {
+  \item The CPU version used one OpenMP thread per computational cell, and utilized SIMD operations to accelerate source term and Jacobian evaluation\slash factorization
+  \item The GPU solver was controlled by the CPU which called GPU kernels for Jacobian evaluation, LU Decomposition, etc.
+  }
+  \only<2>
+  {
+  \item<2-> A SIMD enabled serial CPU solver was \SI{2.0}{\times} and \SI{1.2}{\times} faster than the default serial CPU version for single\slash double precision respectively.
+  \item<2-> The CBE had the best single precision performance---up to \SI{40.7}\times and \SI{11.5}{\times} speedup for single\slash double precision respectively---due to explicitly managed memory and large on-chip fast memory cache sizes, but was difficult to implement.
+  \item<2-> The GPU solver was easy to implement, but difficult to optimize due to small on-chip memory cache sizes; a maximum speedup of \SI{13.7}{\times} and \SI{13.3}{\times} for single\slash double precision (respectively) was achieved.
+  }
+ \end{itemize}
+ \only<1>
+ {
+ \footnotetext[\value{dummynote1}]{\fullcite{Linford:2009}}
+ }
+ \footnotetext[\value{dummynote2}]{\fullcite{Linford:2011}}
+ \setcounter{footnote}{\value{dummynote2}} %restore the counter
+
+\end{frame}
 
 
 
