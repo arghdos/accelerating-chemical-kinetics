@@ -5,6 +5,7 @@
 \usepackage{mathtools}
 \usepackage[version=3]{mhchem} % Formula subscripts using \ce{}, e.g., \ce{H2SO4}
 \usepackage{siunitx}
+\usepackage{hyperref}
 \usepackage[utf8]{inputenc}
 
 \graphicspath{{./Figures/}}
@@ -34,6 +35,17 @@
 
 \newcounter{dummynote1}% Save footnote counter
 \newcounter{dummynote2}% Save footnote counter
+
+%auto incrementing titles from http://tex.stackexchange.com/a/231533
+\newcounter{rosen}
+\newcommand\RosenTitle{%
+  \frametitle{\refstepcounter{rosen}{Rosenbrock Methods}~\therosen}}
+\resetcounteronoverlays{rosen}
+
+\newcounter{wmeth}
+\newcommand\WTitle{%
+  \frametitle{\refstepcounter{wmeth}{W-Methods}~\thewmeth}}
+\resetcounteronoverlays{wmeth}
 
 \bibliography{lit_review.bib}
 
@@ -81,7 +93,7 @@ Computationally guided combustion design has played an important role in develop
   \item \textbf{Solver vectorization}, reformulation of solvers for efficient single-instruction, multiple-data (SIMD) execution both on specialized hardware---e.g. graphics processing units (GPUs)---and modern central processing units (CPUs)
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
  \end{itemize}
- We will focus on \textbf{vectorization}, \texbf{novel solvers} and \textbf{high performance computing}.
+ We will focus on \textbf{vectorization}, \textbf{advanced solvers} and \textbf{high performance computing}.
 \end{frame}
 
 \begin{frame}
@@ -262,15 +274,132 @@ Computationally guided combustion design has played an important role in develop
  \setcounter{footnote}{\value{dummynote2}} %restore the counter
 \end{frame}
 
-\section{Advanced Solvers}
+\section{Advanced Solvers for SIMD Acceleration}
 \begin{frame}
-\frametitle{Parallel Two-Step W-Methods}
-
- 
+ While most integration techniques may benefit from a deep SIMD vectorization (e.g. in LU factorization, matrix multiplies, etc.), complicated solvers may be poorly suited to a wide SIMD\slash SIMT vectorization.
+ \begin{itemize}
+  \item On some architectures (e.g. GPUs), a wide-vectorized solver may outperform a deep-vectorized version of the same~\footfullcite{Stone:2013aa}.
+  \addtocounter{footnote}{-1}
+  \item However, solvers with many conditional statements and program branches (e.g. implicit solvers) may suffer from increased thread-divergence~\footfullcite{Stone:2013aa}.
+ \end{itemize}
+ It is therefore important to identify stiff solvers suitable for efficient wide-vectorization.
 \end{frame}
 
+\begin{frame}
+ \RosenTitle
+ Stone and Niemeyer~\footfullcite{Stone:2016} investigated the use of SIMD-accelerated Rosenbrock methods for chemical kinetic integration, but why?
+ \begin{itemize}
+ \item Rosenbrock methods result from a linearized form (\textbf{linearly implicit}) of the IRK formulation
+ \begin{itemize}
+  \item No solution of non-linear equations, i.e. \textbf{no Newton iteration}
+  \item \textbf{Less thread divergence} for wide-SIMD\slash SIMT implementations!
+ \end{itemize}
+ \item May be made L-stable~\footfullcite{yu2009}
+ \begin{itemize}
+  \item Suitable for \textbf{stiff problems}
+ \end{itemize}
+ \end{itemize}
+ However, we may want to improve the performance...
+\end{frame}
 
+\begin{frame}
+ \RosenTitle
+ An s-stage Rosenbrock method is described as~\footfullcite{yu2009}:
+ \begin{align}
+  (I - h\gamma_{ii}\mathcal{J})k_{i}^{n} = h f(y^n + \sum_{j=1}^{i-1}{\alpha_{ij}k_{j}^{n}}) + h\mathcal{J}\sum_{j=1}^{i-1}{\gamma_{ij}k^{j}_{n}},&\; i = 1, \ldots, s \nonumber \\
+  y^{n+1} = y^{n} + \sum_{j=1}^{s}{b_jk_j}&
+ \end{align}
+ where $\alpha_{ij}$, $\gamma_{ij}$ and $b_{ij}$ are method coefficients, and $h$, $f(\cdot)$, $\mathcal{J}$ are the step-size, chemical source term and resulting Jacobian, respectively.
+ \begin{itemize}
+   \item Let $\gamma_{ii} = \gamma = \textrm{const.}, \forall i$
+   \begin{itemize}
+    \item Only one LU factorization per step (instead of one per stage)!
+   \end{itemize}
+ \end{itemize}
+ Can we do better?
+\end{frame}
 
+\begin{frame}
+ \WTitle
+ What if the Jacobian supplied was approximate?
+ \begin{itemize}
+  \item Could potentially reuse Jacobian\slash LU factorization between multiple steps, as in implicit techniques
+  \item This is known as a \textbf{W-Method}
+ \end{itemize}
+ Steihaug and Wolfbrandt~\footfullcite{steihaug1979attempt} developed one of the first W-Method solvers:
+ \begin{itemize}
+  \item Their method was a four-stage, second-order, L-stable solver with embedded error estimate
+  \item The Jacobian\slash LU factorization were only recomputed after failure of a internal integration step for accuracy reasons
+  \item Changing the step-size forces re-evaluation of the LU factorization
+  \begin{itemize}
+   \item An empirical set of rules was used to determine when to change step-sizes, combined with a classical error estimator
+  \end{itemize}
+ \end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \WTitle
+%  Rahunanthan and Stanescu~\footfullcite{Rahunanthan2010} developed several six-stage, fourth order L-stable W-methods:
+%  \begin{itemize}
+%   \item No embedded error estimate, instead Richardson extrapolation was used (not practical for real code)
+%   \item Standard adaptive step-size algorithm used~\footfullcite{wanner1991solving}.
+%   \item The LU factorization was reused for up to a user-specified number of steps before changing the step-size.
+%   \begin{itemize}
+%    \item At ten-steps, this resulted in an order-reduction of \numrange{1}{1.5}
+%   \end{itemize}
+%   \item The Jacobian was recalculated at fixed intervals or when the error surpassed a user-defined threshold.
+%   \item The number of Jacobian evaluations compared to a fourth order Rosenbrock method was reduced by roughly a factor of three for a chemical kinetics problem
+%   \begin{itemize}
+%     \item However, the number of LU factorizations was not changed appreciably
+%   \end{itemize}
+%  \end{itemize}
+% \end{frame}
+
+\begin{frame}
+ \WTitle
+ Novati~\footfullcite{Novati2008} developed a secant-Jacobian-updating scheme for a stiffly accurate fourth-order (third-order embedded) W-method
+ \begin{itemize}
+  \item Two updating schemes were developed:
+  \begin{itemize}
+   \item A Schubert scheme that preserves Jacobian sparsity
+   \item A (so-called) bad Broyden's update scheme that does not maintain sparsity
+  \end{itemize}
+  \item When updating the step-size, the order used was reduced by one to account for the reduced accuracy of the Jacobian
+  \item As with other studies, the Jacobian was updated on step-failure
+  \begin{itemize}
+   \item The Broyden's updates drastically reduced the number of LU decompositions
+   \item The Schubert update scheme greatly reduced the number of Jacobian evaluations, replacing them with sparse matrix multiplies
+  \end{itemize}
+
+  
+ \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Parallel Two-Step W-Methods}
+Several works have studied so-called parallel two-step W-Methods~\footfullcite{Jackiewicz2004389}$^,$\footfullcite{Schmitt:2004}$^,$\footfullcite{Schmitt:2005}, which are similar to Rosenbrock solvers.
+\begin{itemize}
+ \only<1>
+ {
+ \item These are \textit{linearly implicit}---they have an implicit formulation, but do not solve a set of nonlinear equations (no Newton iteration)
+ \item These methods are \textit{parallel by design}---each stage can be computed in parallel (e.g. OpenMP, \textit{SIMD})
+ \item W-Methods are similar to Rosenbrock solvers, but may utilize an approximate Jacobian
+ \begin{itemize}
+  \item Enables Jacobian\slash LU factorization reuse to save computation as in implicit techniques
+ \end{itemize}
+ \item These methods are stiffly accurate, but accuracy may be dependent on step-size ratios for stiff problems
+ \begin{itemize}
+  \item Step-size growth may need to be limited explicitly
+ \end{itemize}
+ }
+ \only<2>
+ {
+ \item No order reduction due to high stage orders
+ \item Storage of stage approximations from previous time-step are required
+ }
+\end{itemize}
+\end{frame}
 
 
 \end{document}
