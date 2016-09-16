@@ -47,6 +47,11 @@
   \frametitle{\refstepcounter{wmeth}{W-Methods}~\thewmeth}}
 \resetcounteronoverlays{wmeth}
 
+\newcounter{twostep}
+\newcommand\TwoStepTitle{%
+  \frametitle{\refstepcounter{twostep}{Two-Step Rosenbrock-type Methods}~\thetwostep}}
+\resetcounteronoverlays{twostep}
+
 \bibliography{lit_review.bib}
 
 %opening
@@ -111,8 +116,9 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \frametitle{Single Instruction, Multiple Data Processing}
+ \setcounter{dummynote1}{\value{footnote}}
+ \addtocounter{dummynote1}{1}
  \begin{columns}
- 
  \begin{column}{0.6\textwidth}
   \textbf{Single Instruction, Multiple Data (SIMD)} processing is a vector processing paradigm that allows processing elements (PE)---e.g a CPU core---to execute the same instruction concurrently on different data.
   \begin{itemize}
@@ -128,11 +134,12 @@ Computationally guided combustion design has played an important role in develop
   \begin{figure}
     \centering
     \includegraphics[width=\columnwidth]{SIMD.pdf}
-    \caption{Schematic of SIMD processing.  Adapted from\footnotemark}
+    \caption{Schematic of SIMD processing.  Adapted from\footnotemark[\value{dummynote1}]}
   \end{figure}
  \end{column}
- \footnotetext{\fullcite{Simdfig:2016}}
+ \footnotetext[\value{dummynote1}]{\fullcite{Simdfig:2016}}
  \end{columns}
+ \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
 
 \begin{frame}
@@ -176,7 +183,7 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
   \frametitle{CPU-based SIMD Computing -- Difficulties}
-  Explicit use of SIMD instructions is typically platform--dependent and difficult to implement\footfullcite{Stone:2016}.
+  Explicit use of SIMD instructions is typically platform--dependent and difficult to implement~\footfullcite{Stone:2016}.
   \begin{itemize}
    \item Specialized compilers are often used to identify vectorizable loops and generate the appropriate platform--dependent SIMD code.
   \end{itemize}
@@ -276,13 +283,17 @@ Computationally guided combustion design has played an important role in develop
 
 \section{Advanced Solvers for SIMD Acceleration}
 \begin{frame}
+\frametitle{Suitable Solvers for SIMD Acceleration}
+\setcounter{dummynote1}{\value{footnote}}
+\addtocounter{dummynote1}{1}
  While most integration techniques may benefit from a deep SIMD vectorization (e.g. in LU factorization, matrix multiplies, etc.), complicated solvers may be poorly suited to a wide SIMD\slash SIMT vectorization.
  \begin{itemize}
-  \item On some architectures (e.g. GPUs), a wide-vectorized solver may outperform a deep-vectorized version of the same~\footfullcite{Stone:2013aa}.
-  \addtocounter{footnote}{-1}
-  \item However, solvers with many conditional statements and program branches (e.g. implicit solvers) may suffer from increased thread-divergence~\footfullcite{Stone:2013aa}.
+  \item On some architectures (e.g. GPUs), a wide-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
+  \item However, solvers with many conditional statements and program branches (e.g. implicit solvers) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
  \end{itemize}
  It is therefore important to identify stiff solvers suitable for efficient wide-vectorization.
+ \footnotetext[\value{dummynote1}]{\fullcite{Stone:2013aa}}
+ \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
 
 \begin{frame}
@@ -311,7 +322,7 @@ Computationally guided combustion design has played an important role in develop
  \end{align}
  where $\alpha_{ij}$, $\gamma_{ij}$ and $b_{ij}$ are method coefficients, and $h$, $f(\cdot)$, $\mathcal{J}$ are the step-size, chemical source term and resulting Jacobian, respectively.
  \begin{itemize}
-   \item Let $\gamma_{ii} = \gamma = \textrm{const.}, \forall i$
+   \item Let $\gamma_{ii} = \gamma = \textrm{const.}, \forall i \rightarrow $ \textit{singly implicit}
    \begin{itemize}
     \item Only one LU factorization per step (instead of one per stage)!
    \end{itemize}
@@ -370,36 +381,73 @@ Computationally guided combustion design has played an important role in develop
    \item The Broyden's updates drastically reduced the number of LU decompositions
    \item The Schubert update scheme greatly reduced the number of Jacobian evaluations, replacing them with sparse matrix multiplies
   \end{itemize}
-
-  
  \end{itemize}
-
 \end{frame}
 
 \begin{frame}
-\frametitle{Parallel Two-Step W-Methods}
-Several works have studied so-called parallel two-step W-Methods~\footfullcite{Jackiewicz2004389}$^,$\footfullcite{Schmitt:2004}$^,$\footfullcite{Schmitt:2005}, which are similar to Rosenbrock solvers.
-\begin{itemize}
- \only<1>
- {
- \item These are \textit{linearly implicit}---they have an implicit formulation, but do not solve a set of nonlinear equations (no Newton iteration)
- \item These methods are \textit{parallel by design}---each stage can be computed in parallel (e.g. OpenMP, \textit{SIMD})
- \item W-Methods are similar to Rosenbrock solvers, but may utilize an approximate Jacobian
+ \TwoStepTitle
+ \setcounter{dummynote1}{\value{footnote}}
+ One outstanding issue, the so-called single-step Rosenbrock-type methods that we have looked at thus far:
  \begin{itemize}
-  \item Enables Jacobian\slash LU factorization reuse to save computation as in implicit techniques
+  \item May experience order-reduction for very stiff problems\footnotemark[\value{dummynote1}]
+  \item May require computation of exact Jacobian at every step to maintain high order
  \end{itemize}
- \item These methods are stiffly accurate, but accuracy may be dependent on step-size ratios for stiff problems
+ This leads to the development of linearly-implicit two-step Rosenbrock-type methods:
  \begin{itemize}
-  \item Step-size growth may need to be limited explicitly
+  \item Parallel methods exist, where all stages can be computed simultaneously (e.g. via SIMD)
+  \item The order of an s-stage two-step mechanism is $p \ge s - 1$, even if an inexact Jacobian is used (no order reduction)\footnotemark[\value{dummynote1}]
+  \item A\slash L-stable, stiffly accurate methods exist
  \end{itemize}
- }
- \only<2>
- {
- \item No order reduction due to high stage orders
- \item Storage of stage approximations from previous time-step are required
- }
-\end{itemize}
+ \footnotetext[\value{dummynote1}]{\fullcite{PODHAISKY2005409}}
+ \setcounter{footnote}{\value{dummynote1}}
+\end{frame}
+
+\begin{frame}
+ \TwoStepTitle
+ Jackewicz et al.~\footfullcite{Jackiewicz2004389} developed high-order two-step W-methods with good-stiffness properties:
+ \begin{itemize}
+  \item The methods ranged up to order four, and were stiffly stable for constant step-sizes
+  \begin{itemize}
+    \item This is an issue for all two-step Rosenbrock-type solvers, stability is difficult to prove for non-constant stepsizes
+    \item Typically the maximum step-size increase is explicitly limited and stability is demonstrated numerically.
+  \end{itemize}
+  \item Stability was verified numerically in this work, and found to be valid for a maximum step-size ratio, $\overline{\sigma}$ of:
+  \begin{equation}
+    \sigma = \frac{h_i}{h_{i-1}} \le 1.5
+  \end{equation}
+  where the step-size was controlled through an embedded error-estimator.
+  \item The developed methods were more accurate for very stiff problems and the stages could be computed in parallel
+ \end{itemize}
 \end{frame}
 
 
+\begin{frame}
+ \TwoStepTitle
+ \setcounter{dummynote1}{\value{footnote}}
+ In peer methods, such as developed by Schmitt and Weiner~\footnotemark[\value{dummynote1}], several approximations to the solution---each with similar characteristics---exist at each step.
+ \begin{itemize}
+   \item The stages share the same accuracy and stability properties
+   \item This was a parallel method, the stages could be computed simultaneously
+   \item The coefficients of the method depended on the stepsize ratio and needed to be recomputed on each step-size change:
+   \begin{itemize}
+    \item A cost of $\mathcal{O}(s^3)$, negligible for large systems (potentially adverse for small systems)
+   \end{itemize}
+   \item Methods up to order-seven were developed
+   \item In a sequential implementation, without Jacobian reuse ($\overline{\sigma} = 1.5$), the methods were competitive with a one-step fourth-order Rosenbrock solver.
+
+ \end{itemize}
+ \footnotetext{\fullcite{Schmitt:2005}}
+ \setcounter{footnote}{\value{dummynote1}}
+\end{frame}
+
+
+\begin{frame}
+  \TwoStepTitle
+  In another work, Podhaisky et al.~\footfullcite{PODHAISKY2006374} developed a Nordseick form of two-step peer W-Methods that allowed for cheap step-size change
+  \begin{itemize}
+   \item All the various two-step methods (parallel, peer variables, etc.) can be written in this form
+   \item Method coefficients did not need to be solved for at each step, important for small problems where this cost could be prohibitive
+  \end{itemize}
+  Other options possible, e.g. multiply-implicit two-step methods~\footfullcite{Schmitt2005b} but seem immature for implementation.
+\end{frame}
 \end{document}
