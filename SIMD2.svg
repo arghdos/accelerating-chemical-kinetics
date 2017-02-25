@@ -170,9 +170,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="-109.31527"
-     inkscape:cy="152.9582"
+     inkscape:zoom="1.979899"
+     inkscape:cx="33.749716"
+     inkscape:cy="145.70525"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -180,8 +180,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1366"
-     inkscape:window-height="715"
+     inkscape:window-width="1680"
+     inkscape:window-height="1030"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
      inkscape:window-maximized="1">
@@ -322,23 +322,17 @@
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
-       x="234.06793"
-       y="170.42618"
+       x="236.3418"
+       y="170.8407"
        id="text3777"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3779"
-         x="234.06793"
-         y="170.42618"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L0</tspan></text>
-    <rect
-       ry="20"
-       y="254.36218"
-       x="222"
-       height="60"
-       width="60"
-       id="rect4983"
-       style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter5027)" />
+         x="236.3418"
+         y="170.8407"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan3076">0</tspan></tspan></text>
     <rect
        ry="20"
        y="192.36218"
@@ -358,35 +352,30 @@
     <text
        sodipodi:linespacing="125%"
        id="text3792"
-       y="230.42618"
-       x="234.06793"
+       y="230.98718"
+       x="237.9707"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
        xml:space="preserve"><tspan
-         y="230.42618"
-         x="234.06793"
+         y="230.98718"
+         x="237.9707"
          id="tspan3794"
          sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L1</tspan></text>
-    <rect
-       style="fill:#facfc3;fill-opacity:1;stroke:#000000;stroke-opacity:1"
-       id="rect3798"
-       width="60"
-       height="60"
-       x="220"
-       y="252.36218"
-       ry="20" />
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan3074">1</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
-       x="234.06793"
-       y="290.42618"
+       x="265.63367"
+       y="-247.99805"
        id="text3800"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       transform="matrix(0,1,-1,0,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3802"
-         x="234.06793"
-         y="290.42618"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L2</tspan></text>
+         x="265.63367"
+         y="-247.99805"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">...</tspan></text>
     <rect
        ry="20"
        y="312.36218"
@@ -398,26 +387,22 @@
     <text
        sodipodi:linespacing="125%"
        id="text3808"
-       y="350.42618"
-       x="234.06793"
+       y="350.83484"
+       x="236.3125"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:LMSans10;-inkscape-font-specification:LMSans10"
        xml:space="preserve"><tspan
-         y="350.42618"
-         x="234.06793"
+         y="350.83484"
+         x="236.3125"
          id="tspan3810"
          sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L3</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">L<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan3072">N</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1.09318769px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
        d="m 74.475165,162.40679 143.478245,0"
        id="path3812"
        inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1.09318769px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 74.475165,282.34731 103,282.36218 l 0,45 75,0 0,-45 39.95341,-0.0149"
-       id="path4446"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccc" />
     <path
        inkscape:connector-curvature="0"
        id="path4448"
@@ -429,12 +414,6 @@
        id="path4450"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 310,282.36218 -30,0"
-       id="path4636"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
     <path
        inkscape:connector-curvature="0"
        id="path4822"
