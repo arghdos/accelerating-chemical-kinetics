@@ -41,6 +41,11 @@
 \newcounter{dummynote2}% Save footnote counter
 
 %auto incrementing titles from http://tex.stackexchange.com/a/231533
+\newcounter{expensive}
+\newcommand\ExpTitle{%
+  \frametitle{\refstepcounter{expensive}{Chemical Kinetic Integration is \textbf{Expensive}}~\theexpensive}}
+\resetcounteronoverlays{expensive}
+
 \newcounter{rosen}
 \newcommand\RosenTitle{%
   \frametitle{\refstepcounter{rosen}{Rosenbrock Methods}~\therosen}}
@@ -64,7 +69,7 @@
 \bibliography{lit_review.bib}
 
 %opening
-\title{SIMT\slash SIMD computation on CPUs and Co-processors: A Literature Review}
+\title{Accelerating chemical kinetic integration for reactive flows on hybrid architectures: A Literature Review}
 \author{Nick Curtis}
 \institute{University of Connecticut}
 \date{\today}
@@ -86,7 +91,7 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
 
 \begin{frame}
- \frametitle{Chemical Kinetic Integration is \textbf{Expensive}}
+ \ExpTitle
  The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions.
  \begin{itemize}
   \item e.g., for gasoline \footfullcite{Mehl:2011cn} and jet fuel\footfullcite{Naik2011434}
@@ -96,19 +101,24 @@ Computationally guided combustion design has played an important role in develop
   \item Typically implicit integration techniques are used to efficiently deal with stiffness, requiring repeated evaluation and factorization of the chemical kinetic Jacobian.
   \item Naive implementations of these operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
  \end{itemize}
- As a result, chemical kinetic integration may be the most computationally intensive portion of reacting flow simulations, e.g. consuming \SI{70}{\percent}~\footfullcite{kodavasal2016development} of the total solver time in each time-step.
 \end{frame}
 
 \begin{frame}
+ \ExpTitle
+ As a result, chemical kinetic integration may be the most computationally intensive portion of reacting flow simulations, e.g. consuming \SI{70}{\percent}~\footfullcite{kodavasal2016development} of the total solver time in each time-step.
+\end{frame}
+
+
+\begin{frame}
  \frametitle{Strategies for cost reduction}
- A few major strategies exist to accelerate chemical kinetic integration:
+ A few of the major strategies to accelerate chemical kinetic integration:
  \begin{itemize}
   \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
   \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
   \item \textbf{Solver vectorization}, reformulation of solvers for efficient single-instruction, multiple-data (SIMD) execution both on specialized hardware---e.g. graphics processing units (GPUs)---and modern central processing units (CPUs)
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
  \end{itemize}
- We will focus on \textbf{vectorization}, \textbf{advanced solvers} and \textbf{high performance computing}.
+ We will focus on \textbf{vectorization}, \textbf{improved integration} and \textbf{high performance computing} techniques.
 \end{frame}
 
 \begin{frame}
@@ -200,7 +210,7 @@ Computationally guided combustion design has played an important role in develop
   Recently many tools have emerged to ease the development burden of SIMD programming
   \begin{itemize}
    \item \texttt{OpenCL}~\footfullcite{Stone:2010} is a platform--independent language geared towards SIMT\slash SIMD programming.
-   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates explicit SIMT\slash SIMD code for CPUs and GPUs
+   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates SIMT\slash SIMD code for CPUs and GPUs and other accelerators, e.g., Intel's Many Integrated Core (MIC) processor
   \end{itemize}
 \end{frame}
 
