@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usepackage[style=numeric-comp, backend=biber, giveninits=true]{biblatex}
+\usepackage[citestyle=ieee, style=ieee, backend=biber, giveninits=true]{biblatex}
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
@@ -9,6 +9,10 @@
 \usepackage[utf8]{inputenc}
 
 \graphicspath{{./Figures/}}
+
+% use dash for range phrase by default, and one unit
+\sisetup{range-phrase=--, range-units = single}
+
 %smaller footnotes, adapted from http://tex.stackexchange.com/a/146021
 \setbeamerfont{footnote}{size=\fontsize{7pt}{0pt}}
 
@@ -52,6 +56,11 @@
   \frametitle{\refstepcounter{twostep}{Two-Step Rosenbrock-type Methods}~\thetwostep}}
 \resetcounteronoverlays{twostep}
 
+\newcounter{stiff}
+\newcommand\BalanceTitle{%
+  \frametitle{\refstepcounter{stiff}{Stiffness-based Load Balancing}~\thestiff}}
+\resetcounteronoverlays{stiff}
+
 \bibliography{lit_review.bib}
 
 %opening
@@ -87,6 +96,7 @@ Computationally guided combustion design has played an important role in develop
   \item Typically implicit integration techniques are used to efficiently deal with stiffness, requiring repeated evaluation and factorization of the chemical kinetic Jacobian.
   \item Naive implementations of these operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
  \end{itemize}
+ As a result, chemical kinetic integration may be the most computationally intensive portion of reacting flow simulations, e.g. consuming \SI{70}{\percent}~\footfullcite{kodavasal2016development} of the total solver time in each time-step.
 \end{frame}
 
 \begin{frame}
@@ -103,7 +113,7 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \frametitle{Operator Splitting and Vectorization}
- Most reactive-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
+ Most reacting-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
  \begin{itemize}
   \item Stiff integration technique used for chemical kinetics, and an explicit scheme for transport, etc.
   \item Avoids the high cost of solving the fully coupled PDEs
@@ -201,7 +211,7 @@ Computationally guided combustion design has played an important role in develop
  Stone and Niemeyer~\footfullcite{Stone:2016} investigated the effect of both wide and deep SIMD\slash SIMT parallelization on two fourth-order-explicit integration techniques (and accompanying chemical kinetic rate evaluation subroutines) on the CPU, GPU and an Intel Xeon Phi co-processor (MIC).
  \begin{itemize}
   \item The most efficient word-size was 2--4 doubles on both the CPU and MIC
-  \item Speedups of \SIrange[range-phrase=--, range-units = single]{2}{3}{\times} (over a baseline OpenMP parallelized CPU version) were achieved for chemical kinetic rate evaluation using deep-vectorized CPU\slash MIC codes, and shallow-vectorized GPU codes
+  \item Speedups of \SIrange{2}{3}{\times} (over a baseline OpenMP parallelized CPU version) were achieved for chemical kinetic rate evaluation using deep-vectorized CPU\slash MIC codes, and shallow-vectorized GPU codes
   \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for a stiff Rosenbrock solver for the GPU, CPU, and MIC respectively.
   \item Thread divergence may cause significant performance degradation for the GPU solvers
  \end{itemize}
@@ -449,5 +459,51 @@ Computationally guided combustion design has played an important role in develop
    \item Method coefficients did not need to be solved for at each step, important for small problems where this cost could be prohibitive
   \end{itemize}
   Other options possible, e.g. multiply-implicit two-step methods~\footfullcite{Schmitt2005b} but seem immature for implementation.
+\end{frame}
+
+\section{High Performance Computing Techniques}
+\begin{frame}
+ \BalanceTitle
+ In addition to accelerating chemical kinetic integration, \textit{load-balancing} is an imporant issue for speeding up reacting-flow simulations:
+ \begin{itemize}
+  \item Typically, the domain of a simulation is split up into smaller groupings of computational cells that may be assigned to different server nodes using MPI and solved in parallel
+  \item If some nodes take much longer to solve than others, many server nodes will sit idle waiting on this bottleneck
+ \end{itemize}
+\end{frame}
+\begin{frame}
+ \BalanceTitle
+ Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in realistic reacting-flow simulations.
+ \begin{itemize}
+  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated each computational after each CFD-timestep.
+  \item The global average stiffness computed over all cells, and each MPI node transferred or recieved computational cells to attempt to match their stiffness to this average
+ \end{itemize}
+ Chemistry load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per cell---was significantly improved, resulting in:
+ \begin{itemize}
+  \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified load-balancing algorithm
+  \item An increase in parallel scaling efficiency from \SIrange{56}{58}{\percent} to \SIrange{66}{79}{\percent}
+ \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+ \BalanceTitle
+ One natural extension of the stiffness-based load balancing technique developed by Kodavasal et al.:
+ \begin{itemize}
+  \item It has been demonstrated that non-stiff and moderately-stiff chemical kinetic integration can be accelerated by 1--2 orders of magnitude via GPU-vectorized explicit solvers~\footfullcite{2014NiemeyerGPU}.
+  \item Advanced scheduling\slash load-balancing software for heterogeneous architectures (containing CPUs, GPUs, MICs, etc.) has been developed~\footfullcite{StarPU}
+ \end{itemize}
+ Load balancing selected appropriate integration algorithms and number of computational cells based on the available hardware resources and chemical stiffness would likely provide great benefits for accelerating reacting-flow simulations.
+ \begin{itemize}
+  \item e.g., a node with several GPUs might take large numbers of moderately-stiff computational cells and use an stabilized-explicit integration algorithm
+ \end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{References}
+  \setbeamertemplate{bibliography item}{\insertbiblabel}
+  \printbibliography
 \end{frame}
 \end{document}
