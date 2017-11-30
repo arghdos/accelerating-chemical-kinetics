@@ -10,6 +10,10 @@
 
 \graphicspath{{./Figures/}}
 
+% clear title and doi from citations
+% from https://tex.stackexchange.com/q/165481/56227
+\AtEveryCitekey{\clearfield{doi}\clearfield{title}}
+
 % use dash for range phrase by default, and one unit
 \sisetup{range-phrase=--, range-units = single}
 
@@ -43,7 +47,7 @@
 %auto incrementing titles from http://tex.stackexchange.com/a/231533
 \newcounter{expensive}
 \newcommand\ExpTitle{%
-  \frametitle{\refstepcounter{expensive}{Chemical Kinetic Integration is \textbf{Expensive}}~\theexpensive}}
+  \frametitle{\refstepcounter{expensive}{Chemical kinetic integration is \textbf{expensive}}~\theexpensive}}
 \resetcounteronoverlays{expensive}
 
 \newcounter{rosen}
@@ -81,7 +85,7 @@
 \section{Introduction}
 
 \begin{frame}
-\frametitle{Chemical Kinetic Simulations are \textbf{Critical}}
+\frametitle{Realistic chemical modeling is \textbf{critical}}
 In order to meet increasingly stringent emissions and efficiency requirements, designers of combustion devices have turned to \textbf{new technologies} and \textbf{new fuels}
 \begin{itemize}
  \item Novel combustion regimes such as low-temperature combustion are often controlled by chemical processes, rather than directly controllable physical processes as in current technology
@@ -91,7 +95,7 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
 
 \begin{frame}
- \ExpTitle
+ \frametitle{Chemical kinetic integration is \textbf{expensive}}
  The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions.
  \begin{itemize}
   \item e.g., for gasoline \footfullcite{Mehl:2011cn} and jet fuel\footfullcite{Naik2011434}
@@ -103,10 +107,10 @@ Computationally guided combustion design has played an important role in develop
  \end{itemize}
 \end{frame}
 
-\begin{frame}
- \ExpTitle
- As a result, chemical kinetic integration may be the most computationally intensive portion of reacting flow simulations, e.g. consuming \SI{70}{\percent}~\footfullcite{kodavasal2016development} of the total solver time in each time-step.
-\end{frame}
+%\begin{frame}
+% \ExpTitle
+% As a result, chemical kinetic integration may be the most computationally intensive portion of reacting flow simulations, e.g. consuming \SI{70}{\percent}~\footfullcite{kodavasal2016development} of the total solver time in each time-step.
+%\end{frame}
 
 
 \begin{frame}
@@ -115,19 +119,19 @@ Computationally guided combustion design has played an important role in develop
  \begin{itemize}
   \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
   \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
-  \item \textbf{Solver vectorization}, reformulation of solvers for efficient single-instruction, multiple-data (SIMD) execution both on specialized hardware---e.g. graphics processing units (GPUs)---and modern central processing units (CPUs)
+  \item \textbf{Solver vectorization}, to better utilize available hardware, e.g. via single-instruction, multiple-data (or multiple-thread) (SIMD\slash SIMT) execution on central processing units (CPUs) and other accelerators such as Intel's many integrated core architecture (MIC) or graphics processing units (GPUs).
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
  \end{itemize}
- We will focus on \textbf{vectorization}, \textbf{improved integration} and \textbf{high performance computing} techniques.
+ We will focus on (SIMD) \textbf{vectorization}, \textbf{improved integration} and \textbf{high performance computing} techniques.
 \end{frame}
 
 \begin{frame}
- \frametitle{Operator Splitting and Vectorization}
+ \frametitle{Operator splitting and vectorization}
  Most reacting-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
  \begin{itemize}
   \item Stiff integration technique used for chemical kinetics, and an explicit scheme for transport, etc.
   \item Avoids the high cost of solving the fully coupled PDEs
-  \item Independent system of ODEs at each computational location (e.g. cell) in the domain~$\rightarrow$~vectorization!
+  \item Independent initial value problem (IVP) of chemical kinetic ordinary differential equations (ODEs) at each computational location (e.g. cell) in the domain~$\rightarrow$~vectorization!
  \end{itemize}
  It is noted that significant error can be introduced by operator-splitting schemes if the time-steps are not chosen properly~\footfullcite{Gao2015287}.
 \end{frame}
@@ -135,15 +139,15 @@ Computationally guided combustion design has played an important role in develop
 \section{Single Instruction, Multiple Data\slash Thread Processing Paradigms}
 
 \begin{frame}
- \frametitle{Single Instruction, Multiple Data Processing}
+ \frametitle{Single instruction, multiple data processing}
  \setcounter{dummynote1}{\value{footnote}}
  \addtocounter{dummynote1}{1}
  \begin{columns}
  \begin{column}{0.6\textwidth}
-  \textbf{Single Instruction, Multiple Data (SIMD)} processing is a vector processing paradigm that allows processing elements (PE)---e.g a CPU core---to execute the same instruction concurrently on different data.
+  \textbf{SIMD} computing is a vectorization paradigm that allows processing elements (PE)---e.g a CPU core---to execute the same instruction concurrently on different data.
   \begin{itemize}
-    \item Each vector unit contains multiple processing units (PUs), which are called a \textbf{lane}
-    \item Each vector unit operates on a \textbf{superword}, a variable length data array---typically, \numrange{2}{16} double precision floats (doubles)
+    \item Each vector unit contains multiple processing units (PUs), which together are called a \textbf{vector lane}
+    \item Each vector unit operates on a \textbf{superword}, a variable length data array---usually, \numrange{2}{16} double precision floats (doubles)
     \item Typically a single thread resides on each PE and issues SIMD vector instructions over multiple data
     %\begin{itemize}
     % \item It is possible to have multiple threads per PE, but SIMD instructions between threads do not interact
@@ -163,12 +167,12 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
 
 \begin{frame}
- \frametitle{Single Instruction, Multiple Thread Processing}
+ \frametitle{Single instruction, multiple thread processing}
  \begin{columns}
  \begin{column}{0.6\textwidth}
- \textbf{Single instruction, multiple thread (SIMT)} processing is a related, though separate concept.
+ \textbf{SIMT} processing is a related, though separate concept.
  \begin{itemize}
-  \item Multiple threads reside on a PE, each with instructions to execute at each step (\textrm{I1}, \textrm{I2} in the example)
+  \item Multiple threads reside on a PE, each with instructions to execute at each step (e.g., \textrm{I1}, \textrm{I2} in figure)
   \item All threads that need to execute the same instruction (e.g. \textrm{I1}) execute simultaneously
   \item If some threads need a different instruction (e.g. \textrm{I2}), they must wait and execute their instruction after the other threads
   \item This is known as \textbf{thread divergence}, and is an important performance concern.
@@ -186,18 +190,18 @@ Computationally guided combustion design has played an important role in develop
 
     
 \begin{frame}
- \frametitle{CPU-based SIMD Computing for ODE integration}
- GPUs allow easy implementation of SIMT programs, while SIMD programs are typically easier to construct for CPUs~\footfullcite{Stone:2016}.
- For CPU-based SIMD computing, different levels of parallelism are available:
+ \frametitle{CPU-based SIMD computing for chemical kinetic integration}
+ Most modern GPUs are based on a SIMT architecture~\footfullcite{lindholm2008nvidia}, while all modern CPUs and some accelerators (e.g., the MIC) contain SIMD processors.
+ For SIMD computing, different levels of parallelism are available:
  \begin{itemize}
-  \item Multiple PEs (e.g. multiple cores)
+  \item Multiple PEs (e.g., multiple cores)
   \item SIMD processing available within each PE
-  \item Additionally, multiple threads may reside on PE (e.g.a \textit{hyperthreaded} CPU core)
+  \item Additionally, multiple threads may reside on PE (e.g., a \textit{hyperthreaded} CPU core)
  \end{itemize}
  Different levels of SIMD cooperation possible:
  \begin{itemize}
-  \item Each set of ODEs is assigned to separate SIMD lane, meaning a thread solves multiple sets of ODEs $\rightarrow$ \textbf{shallow} vectorization
-  \item Each thread uses SIMD operators to vectorize solution of a single set of ODEs $\rightarrow$ \textbf{deep} vectorization
+  \item Each chemical kinetic IVP is assigned to separate SIMD lane, meaning a PE solves multiple IVPs $\rightarrow$ \textbf{shallow} vectorization
+  \item Each PE uses SIMD operators to vectorize solution of a single IVP $\rightarrow$ \textbf{deep} vectorization
  \end{itemize}
 \end{frame}
 
@@ -214,22 +218,22 @@ Computationally guided combustion design has played an important role in develop
   \end{itemize}
 \end{frame}
 
-\section{CPU-based SIMD Integration of Stiff ODEs}
+\section{CPU-based SIMD Integration of Stiff IVPs}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
  \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
- Stone and Niemeyer~\footfullcite{Stone:2016} investigated the effect of both wide and deep SIMD\slash SIMT parallelization on two fourth-order-explicit integration techniques (and accompanying chemical kinetic rate evaluation subroutines) on the CPU, GPU and an Intel Xeon Phi co-processor (MIC).
+ Stone and Niemeyer~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two fourth-order integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via compiler pragmas.
  \begin{itemize}
-  \item The most efficient word-size was 2--4 doubles on both the CPU and MIC
-  \item Speedups of \SIrange{2}{3}{\times} (over a baseline OpenMP parallelized CPU version) were achieved for chemical kinetic rate evaluation using deep-vectorized CPU\slash MIC codes, and shallow-vectorized GPU codes
-  \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for a stiff Rosenbrock solver for the GPU, CPU, and MIC respectively.
+  \item A non-stiff explicit Rungke-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} Rosenbrock scheme were used
+  \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
+  \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for the Rosenbrock solver on the GPU, CPU, and MIC respectively.
   \item Thread divergence may cause significant performance degradation for the GPU solvers
  \end{itemize}
 \end{frame}
 
 \begin{frame}
  \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
- Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rodenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
+ Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
  \begin{itemize}
   \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
   \item A speedup of \SI{1.89}{\times} was found over a purely serial solver.
@@ -239,13 +243,13 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
 
 \begin{frame}
- \frametitle{Thread-divergence Mitigation for SIMD\slash SIMT-based ODE Integration}
+ \frametitle{Thread-divergence Mitigation for SIMD\slash SIMT-based IVP Integration}
  \only<1>
  {
- One significant source of thread-divergence for shallow SIMD\slash SIMT ODE solvers is differing time-step sizes between ODE problems
+ One significant source of thread-divergence for shallow SIMD\slash SIMT solvers is differing time-step sizes between IVP problems
  \begin{itemize}
    \item Adaptive time-stepping strategies are commonly used to maintain accuracy while minimizing computational effort (compared to a fixed time-step)
-   \item The number of adaptive time-steps required to complete integration is typically not known a priori, and may be \textit{severely} unbalanced between ODEs processed together in a SIMD\slash SIMT program
+   \item The number of adaptive time-steps required to complete integration is typically not known a priori, and may be \textit{severely} unbalanced between IVPs processed together in a SIMD\slash SIMT program
     \item This may result in significant wastage of computational cycles $\rightarrow$ \textbf{thread divergence}
  \end{itemize}
  }
@@ -253,8 +257,8 @@ Computationally guided combustion design has played an important role in develop
  {
   Murray~\footfullcite{Murray:2012} presented a method of mitigating this issue:
   \begin{itemize}
-    \item Instead of lane\slash thread (work unit) solving a single set of ODEs, it was suggested to assign multiple sets of ODEs to each work unit
-    \item When integration of a set of ODEs completes, the work unit immediately begins to solve the next set of ODEs
+    \item Instead of lane\slash thread (work unit) solving a single IVP, it was suggested to assign multiple IVP to each work unit
+    \item When integration of one IVP completes, the work unit immediately begins to solve the next set of IVP
     \item This packing scheme may result in uncoalesced\slash irregular memory accesses, however:
     \begin{itemize}
      \item Analytically it approaches ideal parallel scaling
@@ -306,12 +310,12 @@ Computationally guided combustion design has played an important role in develop
 \frametitle{Suitable Solvers for SIMD Acceleration}
 \setcounter{dummynote1}{\value{footnote}}
 \addtocounter{dummynote1}{1}
- While most integration techniques may benefit from a deep SIMD vectorization (e.g. in LU factorization, matrix multiplies, etc.), complicated solvers may be poorly suited to a wide SIMD\slash SIMT vectorization.
+ While most integration techniques may benefit from a deep SIMD vectorization (e.g., in LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization.
  \begin{itemize}
-  \item On some architectures (e.g. GPUs), a wide-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
-  \item However, solvers with many conditional statements and program branches (e.g. implicit solvers) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
+  \item On some architectures (e.g., GPUs), a shallow-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
+  \item However, solvers with many conditional statements and program branches (i.e., implicit integrators) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
  \end{itemize}
- It is therefore important to identify stiff solvers suitable for efficient wide-vectorization.
+ It is therefore important to identify stiff solvers suitable for efficient shallow-vectorization.
  \footnotetext[\value{dummynote1}]{\fullcite{Stone:2013aa}}
  \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
@@ -323,7 +327,7 @@ Computationally guided combustion design has played an important role in develop
  \item Rosenbrock methods result from a linearized form (\textbf{linearly implicit}) of the IRK formulation
  \begin{itemize}
   \item No solution of non-linear equations, i.e. \textbf{no Newton iteration}
-  \item \textbf{Less thread divergence} for wide-SIMD\slash SIMT implementations!
+  \item \textbf{Less thread divergence} for shallow-SIMD\slash SIMT implementations!
  \end{itemize}
  \item May be made L-stable~\footfullcite{yu2009}
  \begin{itemize}
@@ -444,7 +448,7 @@ Computationally guided combustion design has played an important role in develop
 \begin{frame}
  \TwoStepTitle
  \setcounter{dummynote1}{\value{footnote}}
- In peer methods, such as developed by Schmitt and Weiner~\footnotemark[\value{dummynote1}], several approximations to the solution---each with similar characteristics---exist at each step.
+ In peer methods, such as developed by Schmitt and Weiner\footnotemark[\value{dummynote1}], several approximations to the solution---each with similar characteristics---exist at each step.
  \begin{itemize}
    \item The stages share the same accuracy and stability properties
    \item This was a parallel method, the stages could be computed simultaneously
