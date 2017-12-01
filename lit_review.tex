@@ -394,7 +394,7 @@ Computationally guided combustion design has played an important role in develop
 \begin{frame}
  \TwoStepTitle
  \setcounter{dummynote1}{\value{footnote}}
- One outstanding issue, the so-called single-step Rosenbrock-type methods that we have looked at thus far:
+ One outstanding issue with the single-step Rosenbrock\slash W-methods that we have looked at thus far:
  \begin{itemize}
   \item May experience order-reduction for very stiff problems\footnotemark[\value{dummynote1}]
   \item May require computation of exact Jacobian at every step to maintain high order
@@ -420,7 +420,7 @@ Computationally guided combustion design has played an important role in develop
   \end{itemize}
   \item Stability was verified numerically in this work, and found to be valid for a maximum step-size ratio, $\overline{\sigma}$ of:
   \begin{equation}
-    \sigma = \frac{h_i}{h_{i-1}} \le 1.5
+    \overline{\sigma} = \frac{h_i}{h_{i-1}} \le 1.5
   \end{equation}
   where the step-size was controlled through an embedded error-estimator.
   \item The developed methods were more accurate for very stiff problems and the stages could be computed in parallel
@@ -430,21 +430,17 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \TwoStepTitle
- \setcounter{dummynote1}{\value{footnote}}
- In peer methods, such as developed by Schmitt and Weiner\footnotemark[\value{dummynote1}], several approximations to the solution---each with similar characteristics---exist at each step.
+ In peer methods, such as developed by Schmitt and Weiner\footfullcite{Schmitt:2005}, several approximations to the solution---each with similar characteristics---exist at each step.
  \begin{itemize}
    \item The stages share the same accuracy and stability properties
    \item This was a parallel method, the stages could be computed simultaneously
    \item The coefficients of the method depended on the stepsize ratio and needed to be recomputed on each step-size change:
    \begin{itemize}
-    \item A cost of $\mathcal{O}(s^3)$, negligible for large systems (potentially adverse for small systems)
+    \item A cost of $\mathcal{O}(s^3)$ (for an \textit{s} stage method), negligible for large systems (potentially adverse for small systems)
    \end{itemize}
    \item Methods up to order-seven were developed
    \item In a sequential implementation, without Jacobian reuse ($\overline{\sigma} = 1.5$), the methods were competitive with a one-step fourth-order Rosenbrock solver.
-
  \end{itemize}
- \footnotetext{\fullcite{Schmitt:2005}}
- \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
 
 
@@ -461,22 +457,24 @@ Computationally guided combustion design has played an important role in develop
 \section{High Performance Computing Techniques}
 \begin{frame}
  \BalanceTitle
- In addition to accelerating chemical kinetic integration, \textit{load-balancing} is an imporant issue for speeding up reacting-flow simulations:
+ In addition to accelerating chemical kinetic integration, \textit{load-balancing} is an important performance issue for reacting-flow simulations:
  \begin{itemize}
-  \item Typically, the domain of a simulation is split up into smaller groupings of computational cells that may be assigned to different server nodes using MPI and solved in parallel
-  \item If some nodes take much longer to solve than others, many server nodes will sit idle waiting on this bottleneck
+  \item Typically, the domain of a simulation is split up into smaller groupings of computational cells that may be assigned to different server nodes and solved in parallel
+  \item If chemical kinetic integration takes much longer some nodes than on others, many computational resources may sit idle waiting on this bottleneck
  \end{itemize}
+ Many strategies for chemistry load-balancing exist, e.g., via using a queue to select cells to solve\footfullcite{Flowers2006} or by balancing the time to solve the chemical kinetic integration on each node\footfullcite{Shi2009} (however this was for a serial code, and adaptive mesh refinement was not considered).
 \end{frame}
+
 \begin{frame}
  \BalanceTitle
- Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in realistic reacting-flow simulations.
+ Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
-  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated each computational after each CFD-timestep.
-  \item The global average stiffness computed over all cells, and each MPI node transferred or recieved computational cells to attempt to match their stiffness to this average
+  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated for each computational cell after a CFD-timestep.
+  \item The global stiffness average was computed over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to this average
  \end{itemize}
- Chemistry load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per cell---was significantly improved, resulting in:
+Load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per node---was significantly improved, resulting in:
  \begin{itemize}
-  \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified load-balancing algorithm
+  \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified algorithm
   \item An increase in parallel scaling efficiency from \SIrange{56}{58}{\percent} to \SIrange{66}{79}{\percent}
  \end{itemize}
 
@@ -489,7 +487,7 @@ Computationally guided combustion design has played an important role in develop
   \item It has been demonstrated that non-stiff and moderately-stiff chemical kinetic integration can be accelerated by 1--2 orders of magnitude via GPU-vectorized explicit solvers~\footfullcite{2014NiemeyerGPU}.
   \item Advanced scheduling\slash load-balancing software for heterogeneous architectures (containing CPUs, GPUs, MICs, etc.) has been developed~\footfullcite{StarPU}
  \end{itemize}
- Load balancing selected appropriate integration algorithms and number of computational cells based on the available hardware resources and chemical stiffness would likely provide great benefits for accelerating reacting-flow simulations.
+ Chemistry load-balancing taking into account availabilty of different integration algorithms, hardware types and chemical stiffness would likely provide great benefits for accelerating reacting-flow simulations.
  \begin{itemize}
   \item e.g., a node with several GPUs might take large numbers of moderately-stiff computational cells and use an stabilized-explicit integration algorithm
  \end{itemize}
