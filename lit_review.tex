@@ -334,24 +334,7 @@ Computationally guided combustion design has played an important role in develop
   \item Suitable for \textbf{stiff problems}
  \end{itemize}
  \end{itemize}
- However, we may want to improve the performance...
-\end{frame}
-
-\begin{frame}
- \RosenTitle
- An s-stage Rosenbrock method is described as~\footfullcite{yu2009}:
- \begin{align}
-  (I - h\gamma_{ii}\mathcal{J})k_{i}^{n} = h f(y^n + \sum_{j=1}^{i-1}{\alpha_{ij}k_{j}^{n}}) + h\mathcal{J}\sum_{j=1}^{i-1}{\gamma_{ij}k^{j}_{n}},&\; i = 1, \ldots, s \nonumber \\
-  y^{n+1} = y^{n} + \sum_{j=1}^{s}{b_jk_j}&
- \end{align}
- where $\alpha_{ij}$, $\gamma_{ij}$ and $b_{ij}$ are method coefficients, and $h$, $f(\cdot)$, $\mathcal{J}$ are the step-size, chemical source term and resulting Jacobian, respectively.
- \begin{itemize}
-   \item Let $\gamma_{ii} = \gamma = \textrm{const.}, \forall i \rightarrow $ \textit{singly implicit}
-   \begin{itemize}
-    \item Only one LU factorization per step (instead of one per stage)!
-   \end{itemize}
- \end{itemize}
- Can we do better?
+ However, still requires evaluation of Jacobian and LU-factorization at every time-step...
 \end{frame}
 
 \begin{frame}
