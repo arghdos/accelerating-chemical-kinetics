@@ -73,7 +73,7 @@
 \bibliography{lit_review.bib}
 
 %opening
-\title{Accelerating chemical kinetic integration for reactive flows on hybrid architectures: A Literature Review}
+\title{Accelerating chemical kinetic integration for reacting-flows on hybrid architectures: A Literature Review}
 \author{Nick Curtis}
 \institute{University of Connecticut}
 \date{\today}
@@ -457,22 +457,22 @@ Computationally guided combustion design has played an important role in develop
 \section{High Performance Computing Techniques}
 \begin{frame}
  \BalanceTitle
- In addition to accelerating chemical kinetic integration, \textit{load-balancing} is an important performance issue for reacting-flow simulations:
+ Chemical \textit{load-balancing} is another important performance issue for reacting-flow simulations:
  \begin{itemize}
-  \item Typically, the domain of a simulation is split up into smaller groupings of computational cells that may be assigned to different server nodes and solved in parallel
-  \item If chemical kinetic integration takes much longer some nodes than on others, many computational resources may sit idle waiting on this bottleneck
+  \item Typically, the domain of a simulation is split up into smaller groupings of computational cells that may be assigned to different server nodes where the chemical kinetic integration may be done in parallel
+  \item If solving the chemistry takes much longer some nodes than on others, many computational resources may sit idle waiting on this bottleneck
  \end{itemize}
- Many strategies for chemistry load-balancing exist, e.g., via using a queue to select cells to solve\footfullcite{Flowers2006} or by balancing the time to solve the chemical kinetic integration on each node\footfullcite{Shi2009} (however this was for a serial code, and adaptive mesh refinement was not considered).
+ Many strategies for chemical load-balancing exist, e.g., via using a queue to select unsolved cells\footfullcite{Flowers2006} or by balancing the time to solve the chemical kinetic integration on each node\footfullcite{Shi2009} (however this was for a serial code, and adaptive mesh refinement was not considered).
 \end{frame}
 
 \begin{frame}
  \BalanceTitle
- Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in high-fidelity reacting-flow simulations.
+ Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
-  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated for each computational cell after a CFD-timestep.
-  \item The global stiffness average was computed over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to this average
+  \item A stiffness metric---wall clock timing of (or number of internal integration steps taken during) chemical kinetic integration---was calculated for each computational cell after each CFD-timestep.
+  \item This metric was averaged over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to the average
  \end{itemize}
-Load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per node---was significantly improved, resulting in:
+Load balancing---measured by the ratio of slowest to fastest chemical kinetic integration time (per server node)---was significantly improved, resulting in:
  \begin{itemize}
   \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified algorithm
   \item An increase in parallel scaling efficiency from \SIrange{56}{58}{\percent} to \SIrange{66}{79}{\percent}
