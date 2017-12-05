@@ -91,18 +91,18 @@ In order to meet increasingly stringent emissions and efficiency requirements, d
  \item Novel combustion regimes such as low-temperature combustion are often controlled by chemical processes, rather than directly controllable physical processes as in current technology
  \item Further, developed solutions must be flexible to accommodate a variety of next generation fuels
 \end{itemize}
-Computationally guided combustion design has played an important role in development of these new technologies, however use of realistic chemical modeling (as required for predictive reacting-flow simulations) is prohibitively expensive for most practical systems. 
+Computationally guided combustion design has played an important role in development of these new technologies, however use of realistic chemical modeling (required for predictive reacting-flow simulations) is prohibitively expensive for most practical systems. 
 \end{frame}
 
 \begin{frame}
  \frametitle{Chemical kinetic integration is \textbf{expensive}}
- The size of chemical kinetic models for fuels relevant transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions.
+ Chemical kinetic models for fuels relevant to transportation and energy generation may consist of hundreds to thousands of chemical species, with potentially tens of thousands of reactions.
  \begin{itemize}
   \item e.g., for gasoline \footfullcite{Mehl:2011cn} and jet fuel\footfullcite{Naik2011434}
  \end{itemize}
  Further, chemical kinetic models are typically \textbf{stiff}---due to the presence of highly reactive radicals and associated short chemical timescales.
  \begin{itemize}
-  \item Typically implicit integration techniques are used to efficiently deal with stiffness, requiring repeated evaluation and factorization of the chemical kinetic Jacobian.
+  \item Implicit integration techniques are commonly used to efficiently deal with stiffness, requiring repeated evaluation and factorization of the chemical kinetic Jacobian.
   \item Naive implementations of these operations scale \textbf{quadratically} and \textbf{cubically} with the number of species in a model, respectively\footfullcite{Lu:2009gh}.
  \end{itemize}
 \end{frame}
@@ -117,7 +117,7 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Strategies for cost reduction}
  A few of the major strategies to accelerate chemical kinetic integration:
  \begin{itemize}
-  \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accurate chemical kinetics (as compared to the full model)
+  \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accuracy (as compared to the full model)
   \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
   \item \textbf{Solver vectorization}, to better utilize available hardware, e.g. via single-instruction, multiple-data (or multiple-thread) (SIMD\slash SIMT) execution on central processing units (CPUs) and other accelerators such as Intel's many integrated core architecture (MIC) or graphics processing units (GPUs).
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
@@ -129,7 +129,7 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Operator splitting and vectorization}
  Most reacting-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
  \begin{itemize}
-  \item Stiff integration technique used for chemical kinetics, and an explicit scheme for transport, etc.
+  \item E.g., a stiff integration technique for chemical kinetics and an explicit scheme for transport, etc.
   \item Avoids the high cost of solving the fully coupled PDEs
   \item Independent initial value problem (IVP) of chemical kinetic ordinary differential equations (ODEs) at each computational location (e.g. cell) in the domain~$\rightarrow$~vectorization!
  \end{itemize}
@@ -191,7 +191,7 @@ Computationally guided combustion design has played an important role in develop
     
 \begin{frame}
  \frametitle{CPU-based SIMD computing for chemical kinetic integration}
- Most modern GPUs are based on a SIMT architecture~\footfullcite{lindholm2008nvidia}, while all modern CPUs and some accelerators (e.g., the MIC) contain SIMD processors.
+ Modern GPUs are based on a SIMT architecture~\footfullcite{lindholm2008nvidia}, while all modern CPUs and some accelerators (e.g., the MIC) contain SIMD processors.
  For SIMD computing, different levels of parallelism are available:
  \begin{itemize}
   \item Multiple PEs (e.g., multiple cores)
@@ -200,8 +200,8 @@ Computationally guided combustion design has played an important role in develop
  \end{itemize}
  Different levels of SIMD cooperation possible:
  \begin{itemize}
-  \item Each chemical kinetic IVP is assigned to separate SIMD lane, meaning a PE solves multiple IVPs $\rightarrow$ \textbf{shallow} vectorization
-  \item Each PE uses SIMD operators to vectorize solution of a single IVP $\rightarrow$ \textbf{deep} vectorization
+  \item Each chemical kinetic IVP is assigned to a separate SIMD lane, meaning a PE solves multiple IVPs $\rightarrow$ \textbf{shallow} vectorization
+  \item Each PE uses SIMD operations to vectorize solution of a single IVP $\rightarrow$ \textbf{deep} vectorization
  \end{itemize}
 \end{frame}
 
@@ -214,7 +214,7 @@ Computationally guided combustion design has played an important role in develop
   Recently many tools have emerged to ease the development burden of SIMD programming
   \begin{itemize}
    \item \texttt{OpenCL}~\footfullcite{Stone:2010} is a platform--independent language geared towards SIMT\slash SIMD programming.
-   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates SIMT\slash SIMD code for CPUs and GPUs and other accelerators, e.g., Intel's Many Integrated Core (MIC) processor
+   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates (vectorized or parallel) C, OpenCL or CUDA code for use on CPUs, GPUs, and MICs.
   \end{itemize}
 \end{frame}
 
@@ -222,7 +222,7 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}[allowframebreaks]
  \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
- Stone and Niemeyer~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two fourth-order integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via compiler pragmas.
+ Stone and Niemeyer~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two fourth-order integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
  \begin{itemize}
   \item A non-stiff explicit Rungke-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} Rosenbrock scheme were used
   \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
@@ -257,13 +257,13 @@ Computationally guided combustion design has played an important role in develop
  {
   Murray~\footfullcite{Murray:2012} presented a method of mitigating this issue:
   \begin{itemize}
-    \item Instead of lane\slash thread (work unit) solving a single IVP, it was suggested to assign multiple IVP to each work unit
-    \item When integration of one IVP completes, the work unit immediately begins to solve the next set of IVP
+    \item Instead of each vector-lane\footnote{Note: This work used a GPU, hence in a typical shallow-vectorization each GPU-thread solves an IVP; however the idea also applies to SIMD vectorization, so we will use ``vector-lane''} solving a single IVP, it was assigned multiple IVPs
+    \item When integration of one IVP completes, the work unit immediately begins to solve the next IVP such that all lanes have work until all IVPs are complete.
     \item This packing scheme may result in uncoalesced\slash irregular memory accesses, however:
     \begin{itemize}
      \item Analytically it approaches ideal parallel scaling
      \item Empirically a \SI{10}{\percent} improvement  was found over the non-packed version on a GPU
-     \item The GPU used in this study is quite old and may have been more adversely affected by uncoalesced memory accesses than a modern GPU
+     \item This study used a very old GPU -- a more modern GPU may be less adversely affected by uncoalesced memory accesses
     \end{itemize}
   \end{itemize}
  }
@@ -310,7 +310,7 @@ Computationally guided combustion design has played an important role in develop
 \frametitle{Suitable Solvers for SIMD Acceleration}
 \setcounter{dummynote1}{\value{footnote}}
 \addtocounter{dummynote1}{1}
- While most integration techniques may benefit from a deep SIMD vectorization (e.g., in LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization.
+ While most integration techniques may easily benefit from deep SIMD vectorization (e.g., via vectorized LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization:
  \begin{itemize}
   \item On some architectures (e.g., GPUs), a shallow-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
   \item However, solvers with many conditional statements and program branches (i.e., implicit integrators) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
@@ -451,7 +451,7 @@ Computationally guided combustion design has played an important role in develop
    \item All the various two-step methods (parallel, peer variables, etc.) can be written in this form
    \item Method coefficients did not need to be solved for at each step, important for small problems where this cost could be prohibitive
   \end{itemize}
-  Other options possible, e.g. multiply-implicit two-step methods~\footfullcite{Schmitt2005b} but seem immature for implementation.
+  Other options possible, e.g., multiply-implicit two-step methods~\footfullcite{Schmitt2005b}, but seem immature for implementation.
 \end{frame}
 
 \section{High Performance Computing Techniques}
@@ -467,21 +467,12 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \BalanceTitle
-<<<<<<< HEAD
  Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
   \item A stiffness metric---wall clock timing of (or number of internal integration steps taken during) chemical kinetic integration---was calculated for each computational cell after each CFD-timestep.
   \item This metric was averaged over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to the average
  \end{itemize}
 Load balancing---measured by the ratio of slowest to fastest chemical kinetic integration time (per server node)---was significantly improved, resulting in:
-=======
- Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in high-fidelity reacting-flow simulations.
- \begin{itemize}
-  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated for each computational cell after a CFD-timestep.
-  \item The global stiffness average was computed over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to this average
- \end{itemize}
-Load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per node---was significantly improved, resulting in:
->>>>>>> 8aaa5da8afa10f9af2708fc0caf6afbe5595f5cc
  \begin{itemize}
   \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified algorithm
   \item An increase in parallel scaling efficiency from \SIrange{56}{58}{\percent} to \SIrange{66}{79}{\percent}
@@ -503,10 +494,9 @@ Load balancing---measured by the ratio of longest to shortest chemical kinetic i
 
 \end{frame}
 
-
-
 \begin{frame}[allowframebreaks]
   \frametitle{References}
+  \renewcommand*{\bibfont}{\scriptsize} 
   \setbeamertemplate{bibliography item}{\insertbiblabel}
   \printbibliography
 \end{frame}
