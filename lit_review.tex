@@ -467,12 +467,21 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \BalanceTitle
+<<<<<<< HEAD
  Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
   \item A stiffness metric---wall clock timing of (or number of internal integration steps taken during) chemical kinetic integration---was calculated for each computational cell after each CFD-timestep.
   \item This metric was averaged over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to the average
  \end{itemize}
 Load balancing---measured by the ratio of slowest to fastest chemical kinetic integration time (per server node)---was significantly improved, resulting in:
+=======
+ Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemistry load balancing in high-fidelity reacting-flow simulations.
+ \begin{itemize}
+  \item A stiffness metric---wall clock timing of or number of internal integration steps taken during chemical kinetic integration---was calculated for each computational cell after a CFD-timestep.
+  \item The global stiffness average was computed over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to this average
+ \end{itemize}
+Load balancing---measured by the ratio of longest to shortest chemical kinetic integration time per node---was significantly improved, resulting in:
+>>>>>>> 8aaa5da8afa10f9af2708fc0caf6afbe5595f5cc
  \begin{itemize}
   \item A speedup of \SIrange{2.4}{3.2}{\times} over the unmodified algorithm
   \item An increase in parallel scaling efficiency from \SIrange{56}{58}{\percent} to \SIrange{66}{79}{\percent}
