@@ -196,7 +196,7 @@ Computationally guided combustion design has played an important role in develop
  \begin{itemize}
   \item Multiple PEs (e.g., multiple cores)
   \item SIMD processing available within each PE
-  \item Additionally, multiple threads may reside on PE (e.g., a \textit{hyperthreaded} CPU core)
+  \item Additionally, multiple threads may reside on PE (e.g., a \textit{hyper-threaded} CPU core)
  \end{itemize}
  Different levels of SIMD cooperation possible:
  \begin{itemize}
@@ -224,7 +224,7 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
  Stone and Niemeyer~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two fourth-order integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
  \begin{itemize}
-  \item A non-stiff explicit Rungke-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} Rosenbrock scheme were used
+  \item A non-stiff explicit Runge-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} Rosenbrock scheme were used
   \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
   \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for the Rosenbrock solver on the GPU, CPU, and MIC respectively.
   \item Thread divergence may cause significant performance degradation for the GPU solvers
@@ -415,7 +415,7 @@ Computationally guided combustion design has played an important role in develop
  \begin{itemize}
   \item The methods ranged up to order four, and were stiffly stable for constant step-sizes
   \begin{itemize}
-    \item This is an issue for all two-step Rosenbrock-type solvers, stability is difficult to prove for non-constant stepsizes
+    \item This is an issue for all two-step Rosenbrock-type solvers, stability is difficult to prove for non-constant step-sizes
     \item Typically the maximum step-size increase is explicitly limited and stability is demonstrated numerically.
   \end{itemize}
   \item Stability was verified numerically in this work, and found to be valid for a maximum step-size ratio, $\overline{\sigma}$ of:
@@ -434,7 +434,7 @@ Computationally guided combustion design has played an important role in develop
  \begin{itemize}
    \item The stages share the same accuracy and stability properties
    \item This was a parallel method, the stages could be computed simultaneously
-   \item The coefficients of the method depended on the stepsize ratio and needed to be recomputed on each step-size change:
+   \item The coefficients of the method depended on the step-size ratio and needed to be recomputed on each step-size change:
    \begin{itemize}
     \item A cost of $\mathcal{O}(s^3)$ (for an \textit{s} stage method), negligible for large systems (potentially adverse for small systems)
    \end{itemize}
@@ -470,7 +470,7 @@ Computationally guided combustion design has played an important role in develop
  Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
   \item A stiffness metric---wall clock timing of (or number of internal integration steps taken during) chemical kinetic integration---was calculated for each computational cell after each CFD-timestep.
-  \item This metric was averaged over all cells, and each server node transferred or recieved computational cells to attempt to match their stiffness to the average
+  \item This metric was averaged over all cells, and each server node transferred or received computational cells to attempt to match their stiffness to the average
  \end{itemize}
 Load balancing---measured by the ratio of slowest to fastest chemical kinetic integration time (per server node)---was significantly improved, resulting in:
  \begin{itemize}
@@ -487,7 +487,7 @@ Load balancing---measured by the ratio of slowest to fastest chemical kinetic in
   \item It has been demonstrated that non-stiff and moderately-stiff chemical kinetic integration can be accelerated by 1--2 orders of magnitude via GPU-vectorized explicit solvers~\footfullcite{2014NiemeyerGPU}.
   \item Advanced scheduling\slash load-balancing software for heterogeneous architectures (containing CPUs, GPUs, MICs, etc.) has been developed~\footfullcite{StarPU}
  \end{itemize}
- Chemistry load-balancing taking into account availabilty of different integration algorithms, hardware types and chemical stiffness would likely provide great benefits for accelerating reacting-flow simulations.
+ Chemistry load-balancing taking into account availability of different integration algorithms, hardware types and chemical stiffness would likely provide great benefits for accelerating reacting-flow simulations.
  \begin{itemize}
   \item e.g., a node with several GPUs might take large numbers of moderately-stiff computational cells and use an stabilized-explicit integration algorithm
  \end{itemize}
