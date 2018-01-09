@@ -119,10 +119,10 @@ Computationally guided combustion design has played an important role in develop
  \begin{itemize}
   \item \textbf{Model reduction}, a host of techniques to reduce the size of the system being solved while maintaining accuracy (as compared to the full model)
   \item \textbf{Improved integration techniques}, development of new integration algorithms specifically for chemical kinetics, e.g. hybrid implicit\slash explicit integrators, tabulation techniques, analytical Jacobian codes, and on-the-fly stiffness removal
-  \item \textbf{Solver vectorization}, to better utilize available hardware, e.g. via single-instruction, multiple-data (or multiple-thread) (SIMD\slash SIMT) execution on central processing units (CPUs) and other accelerators such as Intel's many integrated core architecture (MIC) or graphics processing units (GPUs).
+  \item \textbf{Solver vectorization}, to better utilize available hardware, e.g. via single-instruction, multiple-data\slash multiple-thread (SIMD\slash SIMT) execution on central processing units (CPUs) and other accelerators such as Intel's many integrated core architecture (MIC) or graphics processing units (GPUs).
   \item \textbf{High performance computing techniques}, stiffness-based load balancing, scaling for high performance clusters
  \end{itemize}
- We will focus on (SIMD) \textbf{vectorization}, \textbf{improved integration} and \textbf{high performance computing} techniques.
+ We will focus on SIMD \textbf{vectorization}, \textbf{improved integration} and \textbf{high performance computing} techniques.
 \end{frame}
 
 \begin{frame}
@@ -257,7 +257,7 @@ Computationally guided combustion design has played an important role in develop
  {
   Murray~\footfullcite{Murray:2012} presented a method of mitigating this issue:
   \begin{itemize}
-    \item Instead of each vector-lane\footnote{Note: This work used a GPU, hence in a typical shallow-vectorization each GPU-thread solves an IVP; however the idea also applies to SIMD vectorization, so we will use ``vector-lane''} solving a single IVP, it was assigned multiple IVPs
+    \item Instead of each vector-lane\footnote{Note: This work used a GPU, hence in a typical shallow-vectorization each GPU-thread solves an IVP; however the idea also applies to SIMD vectorization, so we will use the term ``vector-lane''} solving a single IVP, it was assigned multiple IVPs
     \item When integration of one IVP completes, the work unit immediately begins to solve the next IVP such that all lanes have work until all IVPs are complete.
     \item This packing scheme may result in uncoalesced\slash irregular memory accesses, however:
     \begin{itemize}
@@ -279,7 +279,7 @@ Computationally guided combustion design has played an important role in develop
  {
   Linford and Sandu\footnotemark[\value{dummynote1}]~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
  \begin{itemize}
-  \item All loops are completely unrolled (i.e. static code is generated)
+  \item All loops are completely unrolled (i.e., static code is generated)
   \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup
  \end{itemize}
  }
@@ -305,12 +305,12 @@ Computationally guided combustion design has played an important role in develop
  \setcounter{footnote}{\value{dummynote2}} %restore the counter
 \end{frame}
 
-\section{Advanced Solvers for SIMD Acceleration}
+\section{Advanced Solvers for Shallow-SIMD Acceleration}
 \begin{frame}
 \frametitle{Suitable Solvers for SIMD Acceleration}
 \setcounter{dummynote1}{\value{footnote}}
 \addtocounter{dummynote1}{1}
- While most integration techniques may easily benefit from deep SIMD vectorization (e.g., via vectorized LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization:
+ While most integration techniques may benefit from deep SIMD vectorization (e.g., via vectorized LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization:
  \begin{itemize}
   \item On some architectures (e.g., GPUs), a shallow-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
   \item However, solvers with many conditional statements and program branches (i.e., implicit integrators) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
