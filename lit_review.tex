@@ -175,7 +175,7 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
     
 \begin{frame}
- \frametitle{CPU-based SIMD computing for chemical kinetic integration}
+ \frametitle{SIMD\slash~SIMT computing for chemical kinetic integration}
  Modern GPUs are based on a SIMT architecture~\footfullcite{lindholm2008nvidia}, while all modern CPUs and some accelerators (e.g., the MIC) contain SIMD processors.
  For SIMD computing, different levels of parallelism are available:
  \begin{itemize}
@@ -188,19 +188,6 @@ Computationally guided combustion design has played an important role in develop
   \item Each chemical kinetic IVP is assigned to a separate SIMD lane, meaning a PE solves multiple IVPs $\rightarrow$ \textbf{shallow} vectorization
   \item Each PE uses SIMD operations to vectorize solution of a single IVP $\rightarrow$ \textbf{deep} vectorization
  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{CPU-based SIMD Computing -- Difficulties}
-  Explicit use of SIMD instructions is typically platform--dependent and difficult to implement~\footfullcite{Stone:2016}.
-  \begin{itemize}
-   \item Specialized compilers are often used to identify vectorizable loops and generate the appropriate platform--dependent SIMD code.
-  \end{itemize}
-  Recently many tools have emerged to ease the development burden of SIMD programming
-  \begin{itemize}
-   \item \texttt{OpenCL}~\footfullcite{Stone:2010} is a platform--independent language geared towards SIMT\slash SIMD programming.
-   \item \texttt{loo.py}~\footfullcite{Klockner:2014} is a python--based code generation platform that generates (vectorized or parallel) C, OpenCL or CUDA code for use on CPUs, GPUs, and MICs.
-  \end{itemize}
 \end{frame}
 
 \section{CPU-based SIMD Integration of Stiff IVPs}
