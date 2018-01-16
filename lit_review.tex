@@ -139,11 +139,9 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Operator splitting and vectorization}
  Most reacting-flow codes utilize the operator-splitting techniques (e.g.~\footfullcite{Knio:1999}$^{,}$~\footfullcite{Ren:2008}), separating a large system of coupled partial differential equations (PDEs), such that different physical processes are solved independently.
  \begin{itemize}
-  \item E.g., a stiff integration technique for chemical kinetics and an explicit scheme for transport, etc.
-  \item Avoids the high cost of solving the fully coupled PDEs
   \item Independent initial value problem (IVP) of chemical kinetic ordinary differential equations (ODEs) at each computational location (e.g. cell) in the domain~$\rightarrow$~vectorization!
  \end{itemize}
- It is noted that significant error can be introduced by operator-splitting schemes if the time-steps are not chosen properly~\footfullcite{Gao2015287}.
+
 \end{frame}
 
 \section{Single Instruction, Multiple Data\slash Thread Processing Paradigms}
