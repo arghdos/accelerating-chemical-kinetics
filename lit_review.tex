@@ -147,55 +147,32 @@ Computationally guided combustion design has played an important role in develop
 \section{Single Instruction, Multiple Data\slash Thread Processing Paradigms}
 
 \begin{frame}
- \frametitle{Single instruction, multiple data processing}
+ \frametitle{Single instruction, multiple data\slash~thread processing}
  \setcounter{dummynote1}{\value{footnote}}
  \addtocounter{dummynote1}{1}
  \begin{columns}
- \begin{column}{0.6\textwidth}
-  \textbf{SIMD} computing is a vectorization paradigm that allows processing elements (PE)---e.g a CPU core---to execute the same instruction concurrently on different data.
+ \begin{column}{0.5\textwidth}
+  \textbf{SIMD} computing allows processing elements (PEs)---e.g a CPU core---to execute the same instruction concurrently on different data:
   \begin{itemize}
-    \item Each vector unit contains multiple processing units (PUs), which together are called a \textbf{vector lane}
-    \item Each vector unit operates on a \textbf{superword}, a variable length data array---usually, \numrange{2}{16} double precision floats (doubles)
-    \item Typically a single thread resides on each PE and issues SIMD vector instructions over multiple data
+    \item Each PE contains multiple processing units (PUs), which together are called a \textbf{vector lane}
+    \item Vector instructions operate on a \textbf{superword}---usually, \numrange{2}{16} double precision floats (doubles)
+    \item Typically only a single thread (two if \textit{hyperthreaded}) on each PE
     %\begin{itemize}
     % \item It is possible to have multiple threads per PE, but SIMD instructions between threads do not interact
     %\end{itemize}
   \end{itemize}
  \end{column}
- \begin{column}{0.4\textwidth}
-  \begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{SIMD.pdf}
-    \caption{Schematic of SIMD processing.  Adapted from\footnotemark[\value{dummynote1}]}
-  \end{figure}
+ \begin{column}{0.5\textwidth}
+ \textbf{SIMT} computing is related, but allows many threads on a processing element:
+ \begin{itemize}
+    \item Each thread has an instruction to execute; all threads with the same instruction execute simultaneously
+    \item Threads with a different instruction must wait and execute their instruction after the other threads
+    \item This is known as \textbf{thread divergence}, and is an important performance concern.
+  \end{itemize}
  \end{column}
- \footnotetext[\value{dummynote1}]{\fullcite{Simdfig:2016}}
  \end{columns}
  \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
-
-\begin{frame}
- \frametitle{Single instruction, multiple thread processing}
- \begin{columns}
- \begin{column}{0.6\textwidth}
- \textbf{SIMT} processing is a related, though separate concept.
- \begin{itemize}
-  \item Multiple threads reside on a PE, each with instructions to execute at each step (e.g., \textrm{I1}, \textrm{I2} in figure)
-  \item All threads that need to execute the same instruction (e.g. \textrm{I1}) execute simultaneously
-  \item If some threads need a different instruction (e.g. \textrm{I2}), they must wait and execute their instruction after the other threads
-  \item This is known as \textbf{thread divergence}, and is an important performance concern.
- \end{itemize}
- \end{column}
- \begin{column}{0.4\textwidth}
-  \begin{figure}[r]
-    \centering
-    \includegraphics[width=\columnwidth]{SIMT.pdf}
-    \caption{Schematic of SIMT processing}
-  \end{figure}
- \end{column}
- \end{columns}
-\end{frame}
-
     
 \begin{frame}
  \frametitle{CPU-based SIMD computing for chemical kinetic integration}
