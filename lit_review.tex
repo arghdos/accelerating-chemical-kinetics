@@ -205,25 +205,29 @@ Computationally guided combustion design has played an important role in develop
 
 \section{CPU-based SIMD Integration of Stiff IVPs}
 
-\begin{frame}[allowframebreaks]
- \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
- Stone et al.~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
- \begin{itemize}
-  \item A non-stiff explicit fourth-order (fifth-order embedded) Runge-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} fourth-order Rosenbrock scheme were used
-  \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
-  \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for the Rosenbrock solver on the GPU, CPU, and MIC respectively.
-  \item Thread divergence may cause significant performance degradation for the GPU solvers
- \end{itemize}
-\end{frame}
-
 \begin{frame}
- \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
- Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
+ \frametitle{Automatic SIMD-enabled Code Generation for Atmospheric Chemical Kinetics}
+ \only<1>
+ {
+  Linford and Sandu~\footfullcite{Linford:2009}~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
  \begin{itemize}
-  \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
-  \item A speedup of \SI{1.89}{\times} was found over a purely serial solver.
-  \item The CBE had two double precision SIMD lanes, hence the parallel efficiency: $\epsilon = \frac{1.89}{2.0} = 0.94$.
-  \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
+  \item All loops are completely unrolled (i.e., static code is generated)
+  \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup
+ \end{itemize}
+ }
+ Linford et al.~\footfullcite{Linford:2011}~extended this work to GPUs and CBEs:
+ \begin{itemize}
+  \only<1>
+  {
+  \item The CPU version used one OpenMP thread per computational cell, and utilized SIMD operations to accelerate source term and Jacobian evaluation\slash factorization
+  \item The GPU solver was controlled by the CPU which called GPU kernels for Jacobian evaluation, LU Decomposition, etc.
+  }
+  \only<2>
+  {
+  \item<2-> A SIMD enabled serial CPU solver was \SI{2.0}{\times} and \SI{1.2}{\times} faster than the default serial CPU version for single\slash double precision respectively.
+  \item<2-> The CBE had the best single precision performance---up to \SI{40.7}\times and \SI{11.5}{\times} speedup for single\slash double precision respectively---due to explicitly managed memory and large on-chip fast memory cache sizes, but was difficult to implement.
+  \item<2-> The GPU solver was easy to implement, but difficult to optimize due to small on-chip memory cache sizes; a maximum speedup of \SI{13.7}{\times} and \SI{13.3}{\times} for single\slash double precision (respectively) was achieved.
+  }
  \end{itemize}
 \end{frame}
 
@@ -255,39 +259,25 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
 
 \begin{frame}
- \frametitle{Automatic SIMD-enabled Code Generation for Atmospheric Chemical Kinetics}
- \setcounter{dummynote1}{\value{footnote}}
- \setcounter{dummynote2}{\value{footnote}}
- \addtocounter{dummynote1}{1}
- \addtocounter{dummynote2}{2}
- \only<1>
- {
-  Linford and Sandu\footnotemark[\value{dummynote1}]~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
+ \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
+ Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
  \begin{itemize}
-  \item All loops are completely unrolled (i.e., static code is generated)
-  \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup
+  \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
+  \item A speedup of \SI{1.89}{\times} was found over a purely serial solver.
+  \item The CBE had two double precision SIMD lanes, hence the parallel efficiency: $\epsilon = \frac{1.89}{2.0} = 0.94$.
+  \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
  \end{itemize}
- }
- Linford et al.\footnotemark[\value{dummynote2}]~extended this work to GPUs and CBEs.
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+ \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
+ Stone et al.~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
  \begin{itemize}
-  \only<1>
-  {
-  \item The CPU version used one OpenMP thread per computational cell, and utilized SIMD operations to accelerate source term and Jacobian evaluation\slash factorization
-  \item The GPU solver was controlled by the CPU which called GPU kernels for Jacobian evaluation, LU Decomposition, etc.
-  }
-  \only<2>
-  {
-  \item<2-> A SIMD enabled serial CPU solver was \SI{2.0}{\times} and \SI{1.2}{\times} faster than the default serial CPU version for single\slash double precision respectively.
-  \item<2-> The CBE had the best single precision performance---up to \SI{40.7}\times and \SI{11.5}{\times} speedup for single\slash double precision respectively---due to explicitly managed memory and large on-chip fast memory cache sizes, but was difficult to implement.
-  \item<2-> The GPU solver was easy to implement, but difficult to optimize due to small on-chip memory cache sizes; a maximum speedup of \SI{13.7}{\times} and \SI{13.3}{\times} for single\slash double precision (respectively) was achieved.
-  }
+  \item A non-stiff explicit fourth-order (fifth-order embedded) Runge-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} fourth-order Rosenbrock scheme were used
+  \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
+  \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for the Rosenbrock solver on the GPU, CPU, and MIC respectively.
+  \item Thread divergence may cause significant performance degradation for the GPU solvers
  \end{itemize}
- \only<1>
- {
- \footnotetext[\value{dummynote1}]{\fullcite{Linford:2009}}
- }
- \footnotetext[\value{dummynote2}]{\fullcite{Linford:2011}}
- \setcounter{footnote}{\value{dummynote2}} %restore the counter
 \end{frame}
 
 \section{Advanced Solvers for Shallow-SIMD Acceleration}
@@ -452,7 +442,7 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \BalanceTitle
- Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
+ Kodavasal et al.~\footfullcite{kodavasal2016development} recently proposed a stiffness-based algorithm for chemical load balancing in high-fidelity reacting-flow simulations.
  \begin{itemize}
   \item A stiffness metric---wall clock timing of (or number of internal integration steps taken during) chemical kinetic integration---was calculated for each computational cell after each CFD-timestep.
   \item This metric was averaged over all cells, and each server node transferred or received computational cells to attempt to match their stiffness to the average
