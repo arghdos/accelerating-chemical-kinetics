@@ -283,16 +283,12 @@ Computationally guided combustion design has played an important role in develop
 \section{Advanced Solvers for Shallow-SIMD Acceleration}
 \begin{frame}
 \frametitle{Suitable Solvers for SIMD Acceleration}
-\setcounter{dummynote1}{\value{footnote}}
-\addtocounter{dummynote1}{1}
  While most integration techniques may benefit from deep SIMD vectorization (e.g., via vectorized LU factorization, matrix multiplication, etc.), complicated solvers may be poorly suited to a shallow SIMD\slash SIMT vectorization:
  \begin{itemize}
-  \item On some architectures (e.g., GPUs), a shallow-vectorized solver may outperform a deep-vectorized version of the same\footnotemark[\value{dummynote1}].
-  \item However, solvers with many conditional statements and program branches (i.e., implicit integrators) may suffer from increased thread-divergence\footnotemark[\value{dummynote1}].
+  \item On some architectures (e.g., GPUs), a shallow-vectorized solver may outperform a deep-vectorized version of the same~\footfullcite{Stone:2013aa}.
+  \item However, solvers with many conditional statements and program branches (i.e., implicit integrators) may suffer from increased thread-divergence\footnotemark[\value{footnote}].
  \end{itemize}
  It is therefore important to identify stiff solvers suitable for efficient shallow-vectorization.
- \footnotetext[\value{dummynote1}]{\fullcite{Stone:2013aa}}
- \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
 
 \begin{frame}
