@@ -230,9 +230,9 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}[allowframebreaks]
  \frametitle{Comparison of SIMD and SIMT parallelization on multiple platforms}
- Stone and Niemeyer~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two fourth-order integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
+ Stone et al.~\footfullcite{Stone:2016} investigated the speedup of shallow SIMD\slash SIMT vectorizations of two integration techniques on the CPU\footnote{using AVX (128-bit) vector instructions}, GPU and an Intel Xeon Phi co-processor (MIC) over a baseline multithreaded OpenMP code that was deep-vectorized via a guided compiler.
  \begin{itemize}
-  \item A non-stiff explicit Runge-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} Rosenbrock scheme were used
+  \item A non-stiff explicit fourth-order (fifth-order embedded) Runge-Kutta-Fehlberg and stiff linearly-implicit\footnote{A linearly implicit integrator does not require Newton-Iteration} fourth-order Rosenbrock scheme were used
   \item Speedups of \SIrange{2.2}{3}{\times} were achieved for chemical kinetic rate evaluation using shallow-vectorized CPU, GPU and MIC codes
   \item Speedups of up to \SI{1.4}{\times}, \SI{2.5}{\times} and \SI{3.2}{\times} were found for the Rosenbrock solver on the GPU, CPU, and MIC respectively.
   \item Thread divergence may cause significant performance degradation for the GPU solvers
@@ -330,7 +330,7 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \RosenTitle
- Stone and Niemeyer~\footfullcite{Stone:2016} investigated the use of SIMD-accelerated Rosenbrock methods for chemical kinetic integration, but why?
+ Stone et al.~\footfullcite{Stone:2016} investigated the use of SIMD-accelerated Rosenbrock methods for chemical kinetic integration, but why?
  \begin{itemize}
  \item Rosenbrock methods result from a linearized form (\textbf{linearly implicit}) of the IRK formulation
  \begin{itemize}
