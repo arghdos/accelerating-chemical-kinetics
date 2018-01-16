@@ -267,6 +267,24 @@ Computationally guided combustion design has played an important role in develop
  \end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{SIMD-based chemical kinetic integration: Overview}
+Several works have explored CPU-based SIMD processing for solution of stiff initial value problems:
+\begin{itemize}
+ \item Automatically generated explicit SIMD-code generated good speedups for atmospheric chemical kinetics~\footfullcite{Linford:2009}~\footfullcite{Linford:2011}
+ \begin{itemize}
+  \item It is noted that the reported speedups were against a serial reference code
+  \item The Cell-Broadband engine had very large speedups, but was difficult to implement (and is no longer produced)
+ \end{itemize}
+ \item A method to mitigate thread-divergence~\footfullcite{Murray:2012} was developed, resulting in a $\SI{10}{\percent}$ improvemnt
+ \item SIMD-based linerly-implicit integrators (suitable for stiff IVPs) demonstrated good speedups~\footfullcite{Stone:2016}
+ \begin{itemize}
+  \item GPU-based solvers were not as efficient
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \section{Advanced Solvers for Shallow-SIMD Acceleration}
 \begin{frame}
 \frametitle{Suitable Solvers for SIMD Acceleration}
