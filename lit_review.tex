@@ -1,12 +1,16 @@
 \documentclass{beamer}
-\usepackage[citestyle=ieee, style=ieee, backend=biber, giveninits=true]{biblatex}
+\usepackage[citestyle=authoryear, style=authoryear, backend=biber]{biblatex}
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage[version=3]{mhchem} % Formula subscripts using \ce{}, e.g., \ce{H2SO4}
 \usepackage{siunitx}
-\usepackage{hyperref}
 \usepackage[utf8]{inputenc}
+% https://tex.stackexchange.com/a/155611/56227
+\usepackage{textcomp}
+% footnote per page https://tex.stackexchange.com/a/1088/56227
+\usepackage{perpage}
+\usepackage{hyperref}
 
 \graphicspath{{./Figures/}}
 
@@ -16,6 +20,12 @@
 
 % use dash for range phrase by default, and one unit
 \sisetup{range-phrase=--, range-units = single}
+
+% footnote per page https://tex.stackexchange.com/a/1088/56227
+\MakePerPage{footnote}
+
+% symbols for footnotes
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
 %smaller footnotes, adapted from http://tex.stackexchange.com/a/146021
 \setbeamerfont{footnote}{size=\fontsize{7pt}{0pt}}
