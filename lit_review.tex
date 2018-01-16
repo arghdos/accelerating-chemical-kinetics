@@ -199,7 +199,7 @@ Computationally guided combustion design has played an important role in develop
   Linford and Sandu~\footfullcite{Linford:2009}~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
  \begin{itemize}
   \item All loops are completely unrolled (i.e., static code is generated)
-  \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup
+  \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup\footnote{Over a serial CPU implementation}
  \end{itemize}
  }
  Linford et al.~\footfullcite{Linford:2011}~extended this work to GPUs and CBEs:
@@ -211,9 +211,9 @@ Computationally guided combustion design has played an important role in develop
   }
   \only<2>
   {
-  \item<2-> A SIMD enabled serial CPU solver was \SI{2.0}{\times} and \SI{1.2}{\times} faster than the default serial CPU version for single\slash double precision respectively.
-  \item<2-> The CBE had the best single precision performance---up to \SI{40.7}\times and \SI{11.5}{\times} speedup for single\slash double precision respectively---due to explicitly managed memory and large on-chip fast memory cache sizes, but was difficult to implement.
-  \item<2-> The GPU solver was easy to implement, but difficult to optimize due to small on-chip memory cache sizes; a maximum speedup of \SI{13.7}{\times} and \SI{13.3}{\times} for single\slash double precision (respectively) was achieved.
+  \item<2-> A SIMD enabled serial CPU solver was \SI{2.0}{\times} and \SI{1.2}{\times}\footnote{Over a serial CPU implementation} faster than the default serial CPU version for single\slash double precision respectively.
+  \item<2-> The CBE had the best single precision performance---up to \SI{40.7}\times and \SI{11.5}{\times}\footnotemark[\value{footnote}] speedup for single\slash double precision respectively---due to explicitly managed memory and large on-chip fast memory cache sizes, but was difficult to implement.
+  \item<2-> The GPU solver was easy to implement, but difficult to optimize due to small on-chip memory cache sizes; a maximum speedup of \SI{13.7}{\times} and \SI{13.3}{\times}\footnotemark[\value{footnote}] for single\slash double precision (respectively) was achieved.
   }
  \end{itemize}
 \end{frame}
