@@ -430,6 +430,26 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
   Other options possible, e.g., multiply-implicit two-step methods~\footfullcite{Schmitt2005b}, but seem immature for implementation.
 \end{frame}
 
+\begin{frame}
+ \frametitle{Advanced solvers for shallow-SIMD acceleration: Overview}
+ W-Methods allow for reuse of the Jacobian\slash~LU factorization:
+ \begin{itemize}
+  \item Early W-methods~\footfullcite{steihaug1979attempt} had empirical rules for when to update the time-step size\slash~Jacobian
+  \item More modern work~\footfullcite{Novati2008} developed Jacobian and LU factorization update schemes
+ \end{itemize}
+ Two-step methods avoid order-reduction for very stiff problems~\footfullcite{PODHAISKY2005409}:
+ \begin{itemize}
+  \item However, the maximum increase in step-size typically must be explicitly limited to ensure stability~\footfullcite{Jackiewicz2004389}, potentially limiting the efficiency of adaptive timestepping.
+ \end{itemize}
+ \only<2->{
+ Parallel two-step methods---in which the integrator stages can be evaluated simultaneously---exist:
+ \begin{itemize}
+  \item These would be very suitable for SIMD-acceleration \textrightarrow very simple deep vectorization.
+ \end{itemize}
+ }
+\end{frame}
+
+
 \section{High Performance Computing Techniques}
 \begin{frame}
  \BalanceTitle
