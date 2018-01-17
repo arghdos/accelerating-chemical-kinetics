@@ -300,7 +300,7 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
  \RosenTitle
  Stone et al.~\footfullcite{Stone:2016} investigated the use of SIMD-accelerated Rosenbrock methods for chemical kinetic integration, but why?
  \begin{itemize}
- \item Rosenbrock methods result from a linearized form (\textbf{linearly implicit}) of the IRK formulation
+ \item Rosenbrock methods result from a linearized form (\textbf{linearly implicit}) of the implicit Runge-Kutta formulation
  \begin{itemize}
   \item No solution of non-linear equations, i.e. \textbf{no Newton iteration}
   \item \textbf{Less thread divergence} for shallow-SIMD\slash SIMT implementations!
@@ -406,7 +406,7 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
 
 \begin{frame}
  \TwoStepTitle
- In peer methods, such as developed by Schmitt and Weiner\footfullcite{Schmitt:2005}, several approximations to the solution---each with similar characteristics---exist at each step.
+ In peer methods, such as developed by Schmitt et al.\footfullcite{Schmitt:2005}, several approximations to the solution---each with similar characteristics---exist at each step.
  \begin{itemize}
    \item The stages share the same accuracy and stability properties
    \item This was a parallel method, the stages could be computed simultaneously
