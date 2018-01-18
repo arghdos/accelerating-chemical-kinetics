@@ -438,19 +438,24 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
 
 \begin{frame}
  \frametitle{Advanced solvers for shallow-SIMD acceleration: Overview}
+ \only<1>{
  W-Methods allow for reuse of the Jacobian\slash~LU factorization:
  \begin{itemize}
   \item Early W-methods~\footfullcite{steihaug1979attempt} had empirical rules for when to update the time-step size\slash~Jacobian
-  \item More modern work~\footfullcite{Novati2008} developed Jacobian and LU factorization update schemes
+  \item More modern work~\footfullcite{Novati2008} developed Jacobian and LU factorization update schemes to maintain accuracy while minimizing computational cost
  \end{itemize}
- Two-step methods avoid order-reduction for very stiff problems~\footfullcite{PODHAISKY2005409}:
+ }
+ \only<1>{
+ Two-step methods avoid order-reduction for very stiff problems~\footfullcite{PODHAISKY2005409}
  \begin{itemize}
   \item However, the maximum increase in step-size typically must be explicitly limited to ensure stability~\footfullcite{Jackiewicz2004389}, potentially limiting the efficiency of adaptive timestepping.
  \end{itemize}
+ }
  \only<2->{
- Parallel two-step methods---in which the integrator stages can be evaluated simultaneously---exist:
+ Parallel two-step methods---in which the integrator stages can be evaluated simultaneously---exist~\footfullcite{PODHAISKY2006374}$^{,}$\footfullcite{Schmitt:2005}:
  \begin{itemize}
-  \item These would be very suitable for SIMD-acceleration \textrightarrow very simple deep vectorization.
+  \item Simple deep vectorization \textrightarrow very suitable for SIMD-acceleration
+  \item A two-step W-Method without Jacobian reuse or parallelization was competitive with a one-step Rosenbrock method\footnotemark[\value{footnote}]
  \end{itemize}
  }
 \end{frame}
