@@ -430,8 +430,8 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
   In another work, Podhaisky et al.~\footfullcite{PODHAISKY2006374} developed a Nordseick form of two-step peer W-Methods that allowed for cheap step-size change
   \begin{itemize}
    \item All the various two-step methods (parallel, peer variables, etc.) can be written in this form
-   \item Method coefficients did not depend on the stepsize ratiom---no need to solve non-linear equations at each step---important for small problems where this cost could be prohibitive
-   \item Superior performance for the developed method---compared to a single-step, fourth-order Rosenbrock solver---for very stiff problems\slash~stringent tolerances without Jacobian reuse.
+   \item Method coefficients did not depend on the stepsize ratio---no need to solve non-linear equations at each step---important for small problems where this cost could be prohibitive
+   \item Superior performance for the developed method without Jacobian reuse---compared to a single-step, fourth-order Rosenbrock solver---for very stiff problems\slash stringent tolerances.
   \end{itemize}
   Other options possible, e.g., multiply-implicit two-step methods~\footfullcite{Schmitt2005b}, but seem immature for implementation.
 \end{frame}
