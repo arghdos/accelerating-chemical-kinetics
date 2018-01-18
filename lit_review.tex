@@ -198,11 +198,11 @@ Computationally guided combustion design has played an important role in develop
  {
   Linford and Sandu~\footfullcite{Linford:2009}~developed a framework for implementation of SIMD-enabled atmospheric chemical kinetic integration, using a Rosenbrock solver.
  \begin{itemize}
-  \item All loops are completely unrolled (i.e., static code is generated)
+  %\item All loops are completely unrolled (i.e., static code is generated)
   \item 29 different level-zero basic linear algebra subprograms (BLAS) operations were developed using SIMD-operations, resulting in up to a \SI{5}{\times} speedup\footnote{Over a serial CPU implementation}
  \end{itemize}
  }
- Linford et al.~\footfullcite{Linford:2011}~extended this work to GPUs and CBEs:
+ Linford et al.~\footfullcite{Linford:2011}~extended this work to GPUs and \only<1>{Cell Broadband Engines (}CBEs\only<1>{)}:
  \begin{itemize}
   \only<1>
   {
@@ -247,11 +247,10 @@ Computationally guided combustion design has played an important role in develop
 
 \begin{frame}
  \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
- Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a cell broadband engine (CBE), a hybrid CPU\slash SIMD processor.
+ Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a CBE:
  \begin{itemize}
   \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
-  \item A speedup of \SI{1.89}{\times} was found over a purely serial solver.
-  \item The CBE had two double precision SIMD lanes, hence the parallel efficiency: $\epsilon = \frac{1.89}{2.0} = 0.94$.
+  \item A speedup of \SI{1.89}{\times} was found over a purely serial solver, a parallel efficiency of $\epsilon = 0.94$.
   \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
  \end{itemize}
 \end{frame}
@@ -271,19 +270,19 @@ Computationally guided combustion design has played an important role in develop
 \frametitle{SIMD-based chemical kinetic integration: Overview}
 Several works have explored CPU-based SIMD processing for solution of stiff initial value problems:
 \begin{itemize}
- \item Automatically generated explicit SIMD-code generated large speedups for atmospheric chemical kinetics~\footfullcite{Linford:2009}~\footfullcite{Linford:2011}
  \only<1>{
+ \item Automatically generated explicit SIMD-code generated large speedups for atmospheric chemical kinetics~\footfullcite{Linford:2009}~\footfullcite{Linford:2011}
  \begin{itemize}
   \item It is noted that the reported speedups were against a serial reference code
  \end{itemize}
- }
  \item The Cell-Broadband engine had large speedups\footnotemark[\value{footnote}] and high parallel efficiencies~\footfullcite{Kroshko:2013}, but were difficult to work with (and are no longer produced)
  \item A method to mitigate thread-divergence~\footfullcite{Murray:2012} was developed, resulting in a $\SI{10}{\percent}$ improvement
+ }
  \only<2->
  {
  \item SIMD-based linerly-implicit integrators (suitable for stiff IVPs) demonstrated good speedups~\footfullcite{Stone:2016}.
  \begin{itemize}
-  \item GPU-based solvers were not as efficient
+  \item The GPU-based solvers' performance may have been adversely affected by thread-divergence
   \item The MIC yielded the largest speedup for both chemical source term evaluation and chemical kinetic integration
  \end{itemize}
  }
