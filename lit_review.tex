@@ -416,9 +416,9 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
  \begin{itemize}
    \item The stages share the same accuracy and stability properties
    \item This was a parallel method, the stages could be computed simultaneously
-   \item The coefficients of the method depended on the step-size ratio and needed to be recomputed on each step-size change:
+   \item The coefficients of the method depended on the step-size ratio and required solution of a set of nonlinear equations on each step-size change:
    \begin{itemize}
-    \item A cost of $\mathcal{O}(s^3)$ (for an \textit{s} stage method), negligible for large systems (potentially adverse for small systems)
+    \item  A cost of $\mathcal{O}(s^3)$ (for an \textit{s} stage method), negligible for large systems (potentially adverse for small systems)
    \end{itemize}
    \item Methods up to order-seven were developed
    \item In a sequential implementation, without Jacobian reuse ($\overline{\sigma} = 1.5$), the methods were competitive with a one-step fourth-order Rosenbrock solver.
@@ -431,7 +431,7 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
   In another work, Podhaisky et al.~\footfullcite{PODHAISKY2006374} developed a Nordseick form of two-step peer W-Methods that allowed for cheap step-size change
   \begin{itemize}
    \item All the various two-step methods (parallel, peer variables, etc.) can be written in this form
-   \item Method coefficients did not need to be solved for at each step, important for small problems where this cost could be prohibitive
+   \item Method coefficients did not depend on the stepsize ratiom, (no need to solve non-linear equations at each step as in Schmitt et al.'s\footfullcite{Schmitt:2005} method), important for small problems where this cost could be prohibitive
   \end{itemize}
   Other options possible, e.g., multiply-implicit two-step methods~\footfullcite{Schmitt2005b}, but seem immature for implementation.
 \end{frame}
@@ -446,7 +446,7 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
  \end{itemize}
  }
  \only<1>{
- Two-step methods avoid order-reduction for very stiff problems~\footfullcite{PODHAISKY2005409}
+ Two-step methods avoid order-reduction for very stiff problems and due to use of inexact Jacobian~\footfullcite{PODHAISKY2005409}
  \begin{itemize}
   \item However, the maximum increase in step-size typically must be explicitly limited to ensure stability~\footfullcite{Jackiewicz2004389}, potentially limiting the efficiency of adaptive timestepping.
  \end{itemize}
