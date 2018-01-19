@@ -57,27 +57,27 @@
 %auto incrementing titles from http://tex.stackexchange.com/a/231533
 \newcounter{expensive}
 \newcommand\ExpTitle{%
-  \frametitle{\refstepcounter{expensive}{Chemical kinetic integration is \textbf{expensive}}~\theexpensive}}
+  \frametitle{\refstepcounter{expensive}{Chemical kinetic integration is \textbf{expensive}~--}~\theexpensive}}
 \resetcounteronoverlays{expensive}
 
 \newcounter{rosen}
 \newcommand\RosenTitle{%
-  \frametitle{\refstepcounter{rosen}{Rosenbrock Methods}~\therosen}}
+  \frametitle{\refstepcounter{rosen}{Rosenbrock Methods~--}~\therosen}}
 \resetcounteronoverlays{rosen}
 
 \newcounter{wmeth}
 \newcommand\WTitle{%
-  \frametitle{\refstepcounter{wmeth}{W-Methods}~\thewmeth}}
+  \frametitle{\refstepcounter{wmeth}{W-Methods~--}~\thewmeth}}
 \resetcounteronoverlays{wmeth}
 
 \newcounter{twostep}
 \newcommand\TwoStepTitle{%
-  \frametitle{\refstepcounter{twostep}{Two-Step Rosenbrock-type Methods}~\thetwostep}}
+  \frametitle{\refstepcounter{twostep}{Two-Step Rosenbrock-type Methods~--}~\thetwostep}}
 \resetcounteronoverlays{twostep}
 
 \newcounter{stiff}
 \newcommand\BalanceTitle{%
-  \frametitle{\refstepcounter{stiff}{Stiffness-based Load Balancing}~\thestiff}}
+  \frametitle{\refstepcounter{stiff}{Stiffness-based Load Balancing~--}~\thestiff}}
 \resetcounteronoverlays{stiff}
 
 \bibliography{lit_review.bib}
@@ -147,7 +147,7 @@ Computationally guided combustion design has played an important role in develop
 \section{Single Instruction, Multiple Data\slash Thread Processing Paradigms}
 
 \begin{frame}
- \frametitle{Single instruction, multiple data\slash~thread processing}
+ \frametitle{Single instruction, multiple data\slash thread processing}
  \setcounter{dummynote1}{\value{footnote}}
  \addtocounter{dummynote1}{1}
  \begin{columns}
@@ -156,7 +156,7 @@ Computationally guided combustion design has played an important role in develop
   \begin{itemize}
     \item Each PE contains multiple processing units (PUs), which together are called a \textbf{vector lane}
     \item Vector instructions operate on a \textbf{superword}---usually, \numrange{2}{16} double precision floats (doubles)
-    \item Typically only a single thread (two if \textit{hyperthreaded}) on each PE
+    \item Typically only a single thread on each PE
     %\begin{itemize}
     % \item It is possible to have multiple threads per PE, but SIMD instructions between threads do not interact
     %\end{itemize}
@@ -166,7 +166,7 @@ Computationally guided combustion design has played an important role in develop
  \textbf{SIMT} computing is a related concept, but allows many threads on a processing element:
  \begin{itemize}
     \item Each thread has an instruction to execute; all threads with the same instruction execute simultaneously
-    \item Threads with a different instruction must wait and execute their instruction after the other threads
+    \item Threads with a different instruction must wait and execute their instruction after the others
     \item This is known as \textbf{thread divergence}, and is an important performance concern.
   \end{itemize}
  \end{column}
@@ -175,7 +175,7 @@ Computationally guided combustion design has played an important role in develop
 \end{frame}
     
 \begin{frame}
- \frametitle{SIMD\slash~SIMT computing for chemical kinetic integration}
+ \frametitle{SIMD\slash SIMT computing for chemical kinetic integration}
  Modern GPUs are based on a SIMT architecture~\footfullcite{lindholm2008nvidia}, while all modern CPUs and some accelerators (e.g., the MIC) contain SIMD processors.
  For SIMD computing, different levels of parallelism are available:
  \begin{itemize}
@@ -249,9 +249,9 @@ Computationally guided combustion design has played an important role in develop
  \frametitle{Shallow-SIMD RODAS solver on a Cell Broadband Engine}
  Kroshko and Spiteri~\footfullcite{Kroshko:2013} implemented a fourth-order Rosenbrock solver (RODAS) capable of solving differential algebraic equations for a CBE:
  \begin{itemize}
-  \item A shallow-SIMD program was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
+  \item A shallow-vectorized solver was developed using explicit SIMD instructions to model \ce{CO2} reformation on a \ce{Pd} catalyst in a plug-flow reactor.
   \item A speedup of \SI{1.89}{\times} was found over a purely serial solver, a parallel efficiency of $\epsilon = 0.94$.
-  \item The number of integrator steps taken\slash rejected, and hence thread divergence, depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
+  \item The number of integrator steps taken\slash rejected---and hence thread divergence---depended strongly (but smoothly) on the initial conditions; a clustering method was suggested to pair similar IVPs to improve efficiency.
  \end{itemize}
 \end{frame}
 
@@ -374,11 +374,11 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
 
 \begin{frame}
  \TwoStepTitle
- \setcounter{dummynote1}{\value{footnote}}
  One outstanding issue with the single-step Rosenbrock\slash W-methods that we have looked at thus far:
  \begin{itemize}
-  \item May experience order-reduction for very stiff problems\footnotemark[\value{dummynote1}]
-  \item May require computation of exact Jacobian at every step to maintain high order
+  \item May experience order-reduction for very stiff problems~\footfullcite{PODHAISKY2005409}
+  \setcounter{dummynote1}{\value{footnote}}
+  \item May require computation of exact Jacobian at every step to maintain high order~\footfullcite{Novati2008}
  \end{itemize}
  This leads to the development of linearly-implicit two-step Rosenbrock-type methods:
  \begin{itemize}
@@ -386,8 +386,6 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
   \item The order of an s-stage two-step mechanism is $p \ge s - 1$, even if an inexact Jacobian is used (no order reduction)\footnotemark[\value{dummynote1}]
   \item A\slash L-stable, stiffly accurate methods exist
  \end{itemize}
- \footnotetext[\value{dummynote1}]{\fullcite{PODHAISKY2005409}}
- \setcounter{footnote}{\value{dummynote1}}
 \end{frame}
 
 \begin{frame}
@@ -446,7 +444,7 @@ Several works have explored CPU-based SIMD processing for solution of stiff init
  \end{itemize}
  }
  \only<1>{
- Two-step methods avoid order-reduction for very stiff problems and due to use of inexact Jacobian~\footfullcite{PODHAISKY2005409}
+ Two-step methods avoid order-reduction for very stiff problems and use of inexact Jacobian~\footfullcite{PODHAISKY2005409}
  \begin{itemize}
   \item However, the maximum increase in step-size typically must be explicitly limited to ensure stability~\footfullcite{Jackiewicz2004389}, potentially limiting the efficiency of adaptive timestepping.
  \end{itemize}
